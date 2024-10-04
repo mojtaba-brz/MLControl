@@ -10,6 +10,6 @@
 
 ## Other Topics
 
-### [Using MATLAB and Python Together](./MATLAB%20+%20Python/Tutorials.m)
+### [Using MATLAB and Python Together](./Other%20Topics/MATLAB%20+%20Python/Tutorials.m)
 
 
