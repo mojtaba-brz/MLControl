@@ -154,27 +154,29 @@ K = place(A, B, eigs)
 
 #### Discrete Time Systems 
 Consider the system as : 
-$$
-x_{k+1} = \tilde{A}x_{k} + \tilde{B}u_{k}
-$$
+
+$$x_{k+1} = \tilde{A}x_{k} + \tilde{B}u_{k}$$
+
 A way to test if this discrete system is controllable is to apply a unit impulse to it. If all states change due to this actuation, then the system is fully controllable. Otherwise, only those states that change are controllable.
 
 These sequence shows this test :
-$$
-u_{0} = 1, \quad x_{0} = 0 \\\
+
+$$u_{0} = 1, \quad x_{0} = 0 \\\
 u_{1} = 0, \quad x_{1} = \tilde{B} \\\
 u_{2} = 0, \quad x_{2} = \tilde{A}\tilde{B} \\\
 u_{3} = 0, \quad x_{3} = \tilde{A}^{2}\tilde{B} \\\
 \vdots \quad\quad\quad\quad \vdots \\\
-u_{n} = 0, \quad x_{n} = \tilde{A}^{n-1}\tilde{B} 
-$$
+u_{n} = 0, \quad x_{n} = \tilde{A}^{n-1}\tilde{B}$$
+
 If all states move due to the unit impulse, then we can say this system is fully controllable.
 
 #### Degree of Controllability and Gramians
 
 
 #### Popove-Belovitch-Hautus (PBH) Test
+
 ![PBH Test](./Linear%20Control%20Attachements/{9617A3AE-61FF-4607-A861-E3D47BC37E62}.png)
+
 References : 
 * [Controllability - By Steven Brunton](https://www.youtube.com/watch?v=h7nJ6ZL4Lf0&list=PLMrJAkhIeNNR20Mz-VpzgfQs5zrYi085m&index=5)
 * [Controllability 2 - By Steven Brunton](https://www.youtube.com/watch?v=h7nJ6ZL4Lf0&list=PLMrJAkhIeNNR20Mz-VpzgfQs5zrYi085m&index=6)
