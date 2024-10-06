@@ -37,15 +37,15 @@ References :
 Consider a system as $\dot{x} = Ax$. We know its solution is $x(t) = e^{At}x(0)$. But how can we calculate th term $e^{At}$?
 If $A$ was a diagonal matrix, the solution would be simple :
 $$e^{\begin{bmatrix}
-\lambda_{1} & 0 & \cdots & \cdots & \cdots\\
-0 & \lambda_{2} & 0 & \cdots & \cdots \\
-0 & 0 & \lambda_{3} & 0 & \cdots \\
+\lambda_{1} & 0 & \cdots & \cdots & \cdots\\\
+0 & \lambda_{2} & 0 & \cdots & \cdots \\\
+0 & 0 & \lambda_{3} & 0 & \cdots \\\
 \vdots  & \vdots & \vdots & \vdots & \vdots
 \end{bmatrix}} = 
 {\begin{bmatrix}
-e^{\lambda_{1}} & 0 & \cdots & \cdots & \cdots\\
-0 & e^{\lambda_{2}} & 0 & \dots & \dots \\
-0 & 0 & e^{\lambda_{3}} & 0 & \dots \\
+e^{\lambda_{1}} & 0 & \cdots & \cdots & \cdots\\\
+0 & e^{\lambda_{2}} & 0 & \dots & \dots \\\
+0 & 0 & e^{\lambda_{3}} & 0 & \dots \\\
 \vdots  & \vdots & \vdots & \vdots & \vdots
 \end{bmatrix}}$$
 Using eigenvalues and eigenvectors of $A$, We can reach to a Diagonal for $x(t) = e^{At}x(0)$ formula. Consider
@@ -57,20 +57,20 @@ Which $\vec{v_{i}}$ is ith eigenvector of $A$ and $\lambda_{i}$ is ith eigenvalu
 
 If can define $T$ and $D$ as
 
-$T = {\begin{bmatrix}
+$$T = {\begin{bmatrix}
 \vec{v_{1}} & \vec{v_{2}} & \cdots
 \end{bmatrix}}, 
 D = {\begin{bmatrix}
-\lambda_{1} & 0 & \cdots & \cdots & \cdots\\
-0 & \lambda_{2} & 0 & \dots & \dots \\
-0 & 0 & \lambda_{3} & 0 & \dots \\
+\lambda_{1} & 0 & \cdots & \cdots & \cdots \\\
+0 & \lambda_{2} & 0 & \dots & \dots \\\
+0 & 0 & \lambda_{3} & 0 & \dots \\\
 \vdots  & \vdots & \vdots & \vdots & \vdots
-\end{bmatrix}}$
+\end{bmatrix}}$$
 
 And considering $x(t) = Tz(t)$, We can rewrite the solution as follows:
-$$AT = TD \implies D = T^{-1}AT, \\
-x(t) = Tz(t) \implies \dot{x}=T\dot{z} \\
-\implies \dot{z} = T^{-1}ATz=Dz \implies z(t) = e^{Dt}z(0) \\
+$$AT = TD \implies D = T^{-1}AT, \\\
+x(t) = Tz(t) \implies \dot{x}=T\dot{z} \\\
+\implies \dot{z} = T^{-1}ATz=Dz \implies z(t) = e^{Dt}z(0) \\\
 \implies x(t) = Te^{Dt}T^{-1}x(0)$$ 
 So it seems if we know the eigenvalues of a linear system, we'll know every thing about it!
 **Note :** Eigenvectors represent a special space for the linear system where all of its states are Independent.
