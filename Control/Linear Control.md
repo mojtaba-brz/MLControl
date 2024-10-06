@@ -88,9 +88,9 @@ References :
 
 ## Stability and Eigenvalues
 Consider $e^{\lambda_{i}t}$ as the response of a linear system and $\lambda_{i} = a + ib$ then we can say
-1. if $a < 0 \implies $ system is stable
-2. if $a = 0 \implies $ system is neutral
-3. if $a > 0 \implies $ system is unstable
+1. if $a < 0 \implies$ system is stable
+2. if $a = 0 \implies$ system is neutral
+3. if $a > 0 \implies$ system is unstable
 
 $\implies$ Only when **all** real parts of eigenvalues are negative can we say a linear system is internally stable.
 ![](./Linear%20Control%20Attachements/{8DFD44AC-5107-4156-ABD3-6D6653ED7100}.png)
@@ -102,6 +102,7 @@ $$x_{k+1} = \tilde{A}x_{k} \qquad\xrightarrow{\text{solution}} \qquad x_{k} = \t
 \tilde{A} = e^{\tilde{A} \Delta t} = \tilde{T}e^{\tilde{D}\Delta t}\tilde{T}^{-1}, \qquad \Delta t = t_{k+1} - t_{k}$$
 
 $\implies$ These systems are stable, if **all** eigenvalues of $\tilde{A}$ are less than one.
+
 ![alt text](./Linear%20Control%20Attachements/{2FD14F61-6E1E-4156-A87C-7B4B17F053A8}.png)
 
 References : 
@@ -110,7 +111,8 @@ References :
 ## Linearizing Around a Fixed Point
 Linearizing means to transform a non-linear system $\dot{x} = \vec{f}_{(x)}$ to a linear system $\Delta\dot{x} = A\Delta x$. Here is a step by step algorithm :
 1. Find a fixed point $\bar{x}$ where $\vec{f}(\bar{x}) = 0$
-2. Linearize about $\bar{x}$ using jacobian of $\vec{f}_{(x)}$: 
+2. Linearize about $\bar{x}$ using jacobian of $\vec{f}_{(x)}$ : 
+
 $$A = \left. \frac{Df}{Dx} \right|_{x = \bar{x}} = 
 \begin{bmatrix}
 \frac{df_{1}}{dx_{1}} & \frac{df_{1}}{dx_{2}} & \frac{df_{1}}{dx_{3}} &  \cdots \\\
@@ -119,6 +121,7 @@ $$A = \left. \frac{Df}{Dx} \right|_{x = \bar{x}} =
 \end{bmatrix}$$
 
 **An Example :**
+
 ![Linearizing Example](./Linear%20Control%20Attachements/{7877F39E-7D5B-4B36-AEF2-6F949D99B8E3}.png)
 
 References : 
