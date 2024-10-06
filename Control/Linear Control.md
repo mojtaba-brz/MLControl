@@ -56,7 +56,8 @@ Which $\vec{v_{i}}$ is ith eigenvector of $A$ and $\lambda_{i}$ is ith eigenvalu
 **Note :** If eigenvalues aren't Independent, it'll be more complex. We're going to address that later.
 
 If can define $T$ and $D$ as
-$$T = {\begin{bmatrix}
+
+$T = {\begin{bmatrix}
 \vec{v_{1}} & \vec{v_{2}} & \cdots
 \end{bmatrix}}, 
 D = {\begin{bmatrix}
@@ -64,7 +65,8 @@ D = {\begin{bmatrix}
 0 & \lambda_{2} & 0 & \dots & \dots \\
 0 & 0 & \lambda_{3} & 0 & \dots \\
 \vdots  & \vdots & \vdots & \vdots & \vdots
-\end{bmatrix}}$$
+\end{bmatrix}}$
+
 And considering $x(t) = Tz(t)$, We can rewrite the solution as follows:
 $$AT = TD \implies D = T^{-1}AT, \\
 x(t) = Tz(t) \implies \dot{x}=T\dot{z} \\
