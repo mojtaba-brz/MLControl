@@ -198,13 +198,13 @@ U is the matrix with columns of $\xi_i$, and D is diagonal matrix with values of
 
 #### Cayley-Hamilton Theory
 A linear algebra gem! It says almost every matrix A satisfies its own characteristic (eigenvalue) equation. 
-$det(A - \lambda I) = 0$ \\\
-$a_0I + a_1\lambda + \cdots + a_{n-1}\lambda^{n-1}= 0$ \\\
+$det(A - \lambda I) = 0$ \\
+$a_0I + a_1\lambda + \cdots + a_{n-1}\lambda^{n-1}= 0$ \\
 $\xrightarrow{we\,can\,replace\,\lambda\,by\,A} a_0I + a_1A + \cdots + a_{n-1}A^{n-1}= 0$
 
 Remember the term, $e^{At}$. It can be right as 
 $e^{At} = I + At + \frac{A^2t^2}{2} + \cdots$
-Since we can rewrite higher terms as a function of $A^0$ to $A^{n-1}$, We can rewrite above series in as follows \\\
+Since we can rewrite higher terms as a function of $A^0$ to $A^{n-1}$, We can rewrite above series in as follows \\
 $e^{At} = \phi_0(t)I + \phi_1(t)A + \phi_2(t)A^2 + \cdots + \phi_{n-1}(t)A^{n-1}$
 
 #### Reachability and Controllability
