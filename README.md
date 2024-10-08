@@ -5,7 +5,7 @@
 ### Testing Different Models (Performance and Stability)
 
 ## Control
-#### [Linear Control Tutorial](./Control/Linear%20Control.md)
+#### [Modern Control Introduction](./Control/Linear%20Control.md)
 
 ## Path Planning And Guidance
 
