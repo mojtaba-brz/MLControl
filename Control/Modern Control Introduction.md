@@ -71,9 +71,9 @@ D = {\begin{bmatrix}
 
 And considering $x(t) = Tz(t)$, We can rewrite the solution as follows:
 
-$AT = TD \implies D = T^{-1}AT,$ \\
-$x(t) = Tz(t) \implies \dot{x}=T\dot{z}$ \\
-$\implies \dot{z} = T^{-1}ATz=Dz \implies z(t) = e^{Dt}z(0)$ \\
+$AT = TD \implies D = T^{-1}AT,$ \\\
+$x(t) = Tz(t) \implies \dot{x}=T\dot{z}$ \\\
+$\implies \dot{z} = T^{-1}ATz=Dz \implies z(t) = e^{Dt}z(0)$ \\\
 $\implies x(t) = Te^{Dt}T^{-1}x(0)$
 
 So it seems if we know the eigenvalues of a linear system, we'll know every thing about it!
@@ -115,8 +115,8 @@ Linearizing means to transform a non-linear system $\dot{x} = \vec{f}_{(x)}$ to 
 
 $$A = \left. \frac{Df}{Dx} \right|_{x = \bar{x}} = 
 \begin{bmatrix}
-\frac{df_{1}}{dx_{1}} & \frac{df_{1}}{dx_{2}} & \frac{df_{1}}{dx_{3}} &  \cdots \\
-\frac{df_{2}}{dx_{1}} & \frac{df_{2}}{dx_{2}} & \frac{df_{2}}{dx_{3}} &  \cdots \\
+\frac{df_{1}}{dx_{1}} & \frac{df_{1}}{dx_{2}} & \frac{df_{1}}{dx_{3}} &  \cdots \\\
+\frac{df_{2}}{dx_{1}} & \frac{df_{2}}{dx_{2}} & \frac{df_{2}}{dx_{3}} &  \cdots \\\
 \vdots & \vdots & \vdots & \vdots
 \end{bmatrix}$$
 
@@ -198,18 +198,18 @@ U is the matrix with columns of $\xi_i$, and D is diagonal matrix with values of
 
 #### Cayley-Hamilton Theory
 A linear algebra gem! It says almost every matrix A satisfies its own characteristic (eigenvalue) equation. 
-$det(A - \lambda I) = 0$ \\
-$a_0I + a_1\lambda + \cdots + a_{n-1}\lambda^{n-1}= 0$ \\
+$det(A - \lambda I) = 0$ \\\
+$a_0I + a_1\lambda + \cdots + a_{n-1}\lambda^{n-1}= 0$ \\\
 $\xrightarrow{we\,can\,replace\,\lambda\,by\,A} a_0I + a_1A + \cdots + a_{n-1}A^{n-1}= 0$
 
 Remember the term, $e^{At}$. It can be right as 
 $e^{At} = I + At + \frac{A^2t^2}{2} + \cdots$
-Since we can rewrite higher terms as a function of $A^0$ to $A^{n-1}$, We can rewrite above series in as follows \\
+Since we can rewrite higher terms as a function of $A^0$ to $A^{n-1}$, We can rewrite above series in as follows \\\
 $e^{At} = \phi_0(t)I + \phi_1(t)A + \phi_2(t)A^2 + \cdots + \phi_{n-1}(t)A^{n-1}$
 
 #### Reachability and Controllability
-If a state $x\prime$ is reachable, then: \\
-$x\prime = \int_{0}^{t}e^{A(t-\tau)}Bu_{(\tau)}d\tau$ \\
+If a state $x\prime$ is reachable, then: \\\
+$x\prime = \int_{0}^{t}e^{A(t-\tau)}Bu_{(\tau)}d\tau$ \\\
 for some input $u(t)$.
 
 References : 
