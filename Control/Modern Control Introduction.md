@@ -396,19 +396,19 @@ In practical control problems, our model of the system has not accurate paramete
 
 In this situation, the response of an MIMO system is written as follows:
 
-$y = Pu + P_dd \\
-y = PK\epsilon + P_dd \\
-y = PK(r - y + n) + P_dd \\
-y + PKy = PKr + PKn + P_dd \\
+$y = Pu + P_dd \\\
+y = PK\epsilon + P_dd \\\
+y = PK(r - y + n) + P_dd \\\
+y + PKy = PKr + PKn + P_dd \\\
 y = (I + PK)^{-1}PKr + (I + PK)^{-1}PKn + (I + PK)^{-1}P_dd$ \
 \
-$L = PK ~~~ \text{open Loop transfer function} \\
-T = (I + L)^{-1}L ~~~~ \text{complementary Transfer function} \\
+$L = PK ~~~ \text{open Loop transfer function} \\\
+T = (I + L)^{-1}L ~~~~ \text{complementary Transfer function} \\\
 S = (I + L)^{-1} ~~~~ \text{Sensitivity transfer function}$
 
 **Note :** $T + S = I$
 
-$y = Tr + TPKn + SP_dd$
+$y = Tr + Tn + SP_dd$
 
 So tracking and noise attenuation are both depend on $T$, disturbance rejection properties are depend on $S$ and $T + S = I$.
 
