@@ -31,9 +31,6 @@ $$\dot{x} = Ax - BKx = (A - BK)x$$
 
 We know the solution of an ODE like $\dot{x} = Mx$ is $x(t) = e^{Mt} x(0)$. So, the only thing we need to do for our system is to set K such that all eigenvalues of $(A - BK)$ becomes negative.
 
-References : 
-* [Control Bootcamp - By Steve Brunton](https://www.youtube.com/watch?v=Pi7l8mMjYVE&list=PLMrJAkhIeNNR20Mz-VpzgfQs5zrYi085m)
-
 ## Linear Systems
 Consider a system as $\dot{x} = Ax$. We know its solution is $x(t) = e^{At}x(0)$. But how can we calculate th term $e^{At}$?
 If $A$ was a diagonal matrix, the solution would be simple :
@@ -84,9 +81,6 @@ So it seems if we know the eigenvalues of a linear system, we'll know every thin
 [T, D] = eig(A);
 ```
 
-References : 
-* [Linear Systems - By Steve Brunton](https://www.youtube.com/watch?v=nyqJJdhReiA&list=PLMrJAkhIeNNR20Mz-VpzgfQs5zrYi085m&index=2)
-
 ## Stability and Eigenvalues
 Consider $e^{\lambda_{i}t}$ as the response of a linear system and $\lambda_{i} = a + ib$ then we can say
 1. if $a < 0 \implies$ system is stable
@@ -105,9 +99,6 @@ $\implies$ These systems are stable, if **all** eigenvalues of $\tilde{A}$ are l
 
 ![alt text](./Linear%20Control%20Attachements/{2FD14F61-6E1E-4156-A87C-7B4B17F053A8}.png)
 
-References : 
-* [Stability and Eigenvalues - By Steve Brunton](https://www.youtube.com/watch?v=h7nJ6ZL4Lf0&list=PLMrJAkhIeNNR20Mz-VpzgfQs5zrYi085m&index=3)
-
 ## Linearizing Around a Fixed Point
 Linearizing means to transform a non-linear system $\dot{x} = \vec{f}_{(x)}$ to a linear system $\Delta\dot{x} = A\Delta x$. Here is a step by step algorithm :
 1. Find a fixed point $\bar{x}$ where $\vec{f}(\bar{x}) = 0$
@@ -123,9 +114,6 @@ $$A = \left. \frac{Df}{Dx} \right|_{x = \bar{x}} =
 **An Example :**
 
 ![Linearizing Example](./Linear%20Control%20Attachements/{7877F39E-7D5B-4B36-AEF2-6F949D99B8E3}.png)
-
-References : 
-* [Linearizing Around a Fixed Point - By Steve Brunton](https://www.youtube.com/playlist?list=PLMrJAkhIeNNR20Mz-VpzgfQs5zrYi085m)
 
 ## Controllability
 **Controllability** : If a system is controllable, then we can manipulate it such that it reaches from **any state $x(0)$ to any state $x(t)$** (Reachability).
@@ -211,9 +199,6 @@ $e^{At} = \phi_0(t)I + \phi_1(t)A + \phi_2(t)A^2 + \cdots + \phi_{n-1}(t)A^{n-1}
 If a state $x\prime$ is reachable, then: \\\
 $x\prime = \int_{0}^{t}e^{A(t-\tau)}Bu_{(\tau)}d\tau$ \\\
 for some input $u(t)$.
-
-References : 
-* [Controllability - By Steve Brunton](https://www.youtube.com/playlist?list=PLMrJAkhIeNNR20Mz-VpzgfQs5zrYi085m)
 
 ### Inverted Pendulum on a Cart (A Pole Placement Example)
 [Link](./Modern%20Control%20Introduction%20Examples/tune_inverte_pedulum_and_cart_controller.m) of the MATLAB script.
@@ -398,9 +383,9 @@ In this situation, the response of an MIMO system is written as follows:
 
 $y = Pu + P_dd$ \
 $y = PK\epsilon + P_dd$ \
-$y = PK(r - y + n) + P_dd$ \
-$y + PKy = PKr + PKn + P_dd$ \
-$y = (I + PK)^{-1}PKr + (I + PK)^{-1}PKn + (I + PK)^{-1}P_dd$ \
+$y = PK(r - y - n) + P_dd$ \
+$y + PKy = PKr - PKn + P_dd$ \
+$y = (I + PK)^{-1}PKr - (I + PK)^{-1}PKn + (I + PK)^{-1}P_dd$ \
 \
 $L = PK ~~~ \text{open Loop transfer function}$ \
 $T = (I + L)^{-1}L ~~~~ \text{complementary Transfer function}$ \
@@ -412,3 +397,27 @@ $y = Tr + Tn + SP_dd$
 
 So tracking and noise attenuation are both depend on $T$, disturbance rejection properties are depend on $S$ and $T + S = I$.
 
+The equation of error can be written as,
+
+$\epsilon = Sr - SP_dd + Tn$
+
+You can see that to minimize the tracking error and achieve good disturbance rejection, we need $S$ to be sufficiently small, and we need $T$ to be sufficiently small for good noise attenuation. Since reference signals and disturbances are usually in the low-frequency domain and sensor noise is usually in the high-frequency domain, we can say that we need $S$ to be sufficiently small at low frequencies and $T$ to be sufficiently small at high frequencies.
+
+![alt text](./Linear%20Control%20Attachements/{CAB1CC08-38F9-4155-985B-ACA589F4EEA9}.png)
+
+There are some issues that limit the maximum bandwidth and the peak of the sensitivity transfer function:
+1. Model uncertainty
+2. Time delays
+3. Right hand plane zeros or poles
+
+## Model Predictive Control
+It's a control that generates optimal control inputs at $t=k$ based prediction of the model responses in $t = k+1$ to $t = k + k_f$. The control engineer can also handle
+1. Nonlinearity 
+2. Linear parameter varying systems
+3. Constraints
+
+However it's computationally expensive.
+![alt text](./Linear%20Control%20Attachements/{B82819E7-1F06-4B92-9300-83753AC3CF13}.png)
+
+References : 
+* [Controllability - By Steve Brunton](https://www.youtube.com/playlist?list=PLMrJAkhIeNNR20Mz-VpzgfQs5zrYi085m)
