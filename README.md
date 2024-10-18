@@ -3,7 +3,7 @@
 ## Machine Learning
 #### ML and Control Review
 #### Testing Different Models (Performance and Stability)
-#### [Physics Informed Machine Learning](./Machine%20Learning/Physics%20Informed%20Machine%20Learning.md)
+#### [Physics Informed Machine Learning](./Machine%20Learning/1.PhIML-An%20Introduction%20to%20Physics-Informed%20ML.md)
 
 ## Control
 #### [Modern Control Introduction](./Control/Modern%20Control%20Introduction.md)
