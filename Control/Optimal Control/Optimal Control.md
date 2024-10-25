@@ -310,17 +310,17 @@ $$
 
 #### Policy Evaluation (Prediction)
 
-![Policy Evaluation](./Attachments/{0FBA8A07-3CDD-491C-AA18-F00D26B591EE}.png)
+![Policy Evaluation](./Attachements/{0FBA8A07-3CDD-491C-AA18-F00D26B591EE}.png)
 
 #### Policy Iteration
 
-![PI]({0CD984C9-D907-441B-87D3-D949716B7C68}.png)
+![PI](./Attachements/{0CD984C9-D907-441B-87D3-D949716B7C68}.png)
 
-![Policy Iteration](./Attachments/{33F6C545-22FE-4C94-B49B-6743E159BBED}.png)
+![Policy Iteration](./Attachements/{33F6C545-22FE-4C94-B49B-6743E159BBED}.png)
 
 #### Generalized Policy Iteration
 
-![GPI](./Attachments/{60DB7B09-A41D-4649-834B-4F545385D5AC}.png)
+![GPI](./Attachements/{60DB7B09-A41D-4649-834B-4F545385D5AC}.png)
 
 ### Solving LQR Problem Using Dynamic Programming
 
