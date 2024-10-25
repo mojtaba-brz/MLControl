@@ -293,8 +293,9 @@ $$
 $$
 q(s, a) = \sum_{s^\prime}p(s^\prime, r|s, a)[r + \gamma \mathcal{v}^\pi(s^\prime)]
 $$
+
 $$
-~~~~~~~~~~~~~ = \sum_{s^\prime}p(s^\prime, r|s, a)[r + \gamma \sum_{a^\prime} \pi(a^\prime|s^\prime)q(s^\prime, a^\prime)]
+\quad \quad \quad \quad \quad \quad \quad \quad \quad = \sum_{s^\prime}p(s^\prime, r|s, a)[r + \gamma \sum_{a^\prime} \pi(a^\prime|s^\prime)q(s^\prime, a^\prime)]
 $$
 
 **Note 1:** In control problems, we usually are looking for deterministic policies, and our environment is deterministic too. So in control problems we usually have:
