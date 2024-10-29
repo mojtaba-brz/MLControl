@@ -394,4 +394,71 @@ $$
 u_k = -H_{uu}^{-1} H_{ux} x_k
 $$
 
-**Note:** $H$ can be estimated using observed states and implemented inputs.
+#### Estimating $H$ Using Collected Data
+
+We know:
+
+$$
+z_k^T H z_k = -x_k^T Q x_k - u_k^T R u_k + z_{k+1}^T H z_{k+1}
+$$
+
+In order to solve the above equation for H, it is better to reorganize it into the form below:
+
+$$
+\bar{z}_k^T\bar{H} = -x_k^T Q x_k - u_k^T R u_k + \bar{z}_{k+1}^T\bar{H} 
+$$
+
+$$
+(\bar{z}_k - \bar{z}_{k+1})^T\bar{H} = -x_k^T Q x_k - u_k^T R u_k
+$$
+
+$
+\bar{H} = \begin{bmatrix}
+H_{11}\\
+ 2H_{12}\\
+ 2H_{13}\\
+ \vdots\\
+ H_{22}\\
+ 2H_{23}\\
+ \vdots \\
+ H_{(n+m)(n+m)}
+\end{bmatrix}
+$
+
+$
+\bar{z} = \begin{bmatrix}
+z_{1}^2 \\
+z_1z_2 \\
+z_1z_3 \\
+\vdots \\
+z_2^2 \\
+z_2z_3 \\
+\vdots 
+\\z_{(n+m)(n+m)}^2
+\end{bmatrix}
+$
+
+By gathering all collected data into matrix $\bar{Z}$ and $\bar{R}$, $H$ can be calculated using least square. 
+**Note :** Samples must be independent. One way to do so is to use white noise in inputs.
+
+$$
+\bar{Z}H = \bar{R} \implies H = (\bar{Z}^T\bar{Z})^{-1}\bar{Z}^T\bar{R}
+$$
+
+$
+\bar{R} = \begin{bmatrix}
+-x_k^T Q x_k - u_k^T R u_k \\
+-x_{k + 1}^T Q x_{k + 1} - u_{k + 1}^T R u_{k + 1} \\
+\vdots
+\end{bmatrix}
+$
+
+$
+\bar{Z} = \begin{bmatrix}
+(\bar{z}_k - \bar{z}_{k+1})^T \\
+(\bar{z}_{k+1} - \bar{z}_{k+2})^T \\
+\vdots
+\end{bmatrix}
+$
+
+**Note 2:** To see an example check [LQR-NoModelRL.py](./Examples/LQR-NoModelRL.py)
