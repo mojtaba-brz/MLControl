@@ -1,4 +1,48 @@
 # Optimal Control
+- [Optimal Control](#optimal-control)
+  - [Linear Quadratic Regulator (LQR) Problem](#linear-quadratic-regulator-lqr-problem)
+    - [Problem Formulation](#problem-formulation)
+      - [Continuous-Time System Dynamics](#continuous-time-system-dynamics)
+      - [Continuous-Time Cost Function](#continuous-time-cost-function)
+    - [Solution Approach for Continuous-Time Systems](#solution-approach-for-continuous-time-systems)
+      - [1. Derive the Optimal Control Law](#1-derive-the-optimal-control-law)
+      - [2. Solve the Algebraic Riccati Equation (ARE)](#2-solve-the-algebraic-riccati-equation-are)
+      - [3. Implement the Control Law](#3-implement-the-control-law)
+    - [Discrete-Time Systems](#discrete-time-systems)
+      - [Discrete-Time System Dynamics](#discrete-time-system-dynamics)
+      - [Discrete-Time Cost Function](#discrete-time-cost-function)
+    - [Solution Approach for Discrete-Time Systems](#solution-approach-for-discrete-time-systems)
+      - [1. Derive the Optimal Control Law](#1-derive-the-optimal-control-law-1)
+      - [2. Solve the Discrete-Time Algebraic Riccati Equation (DARE)](#2-solve-the-discrete-time-algebraic-riccati-equation-dare)
+      - [3. Implement the Control Law](#3-implement-the-control-law-1)
+    - [Analytical Solution to DARE](#analytical-solution-to-dare)
+      - [1. Define the Hamiltonian Matrix](#1-define-the-hamiltonian-matrix)
+      - [2. Eigenvalue Decomposition](#2-eigenvalue-decomposition)
+      - [3. Partition the Eigenvectors](#3-partition-the-eigenvectors)
+      - [4. Compute the Solution $P\_d$](#4-compute-the-solution-p_d)
+      - [5. Verify Positive Definiteness](#5-verify-positive-definiteness)
+      - [How to Compute SVD of a Matrix](#how-to-compute-svd-of-a-matrix)
+        - [Steps to Compute the SVD](#steps-to-compute-the-svd)
+          - [1. Form the Matrix $A^T A$](#1-form-the-matrix-at-a)
+          - [2. Compute the Eigenvalues and Eigenvectors of $A^T A$](#2-compute-the-eigenvalues-and-eigenvectors-of-at-a)
+          - [3. Form the Matrix $V$](#3-form-the-matrix-v)
+          - [4. Compute the Singular Values](#4-compute-the-singular-values)
+          - [5. Form the Diagonal Matrix $\\Sigma$](#5-form-the-diagonal-matrix-sigma)
+          - [6. Compute the Left Singular Vectors](#6-compute-the-left-singular-vectors)
+          - [7. Form the Matrix $U$](#7-form-the-matrix-u)
+  - [Reinforcement Learning Application](#reinforcement-learning-application)
+    - [RL Fundamentals](#rl-fundamentals)
+      - [Markov Decision Process (MDP)](#markov-decision-process-mdp)
+      - [Value Function $\\mathcal{v}(s)$ - Bellman Equation](#value-function-mathcalvs---bellman-equation)
+      - [Action-Value Function $Q(s, a)$](#action-value-function-qs-a)
+      - [Policy Evaluation (Prediction)](#policy-evaluation-prediction)
+      - [Policy Iteration](#policy-iteration)
+      - [Generalized Policy Iteration](#generalized-policy-iteration)
+    - [Solving LQR Problem Using Dynamic Programming](#solving-lqr-problem-using-dynamic-programming)
+    - [Solving LQR Problem Using Q-Learning For Discrete Time Systems](#solving-lqr-problem-using-q-learning-for-discrete-time-systems)
+      - [Estimating $H$ Using Collected Data](#estimating-h-using-collected-data)
+    - [Q-Learning For Non-Linear Discrete Time Systems](#q-learning-for-non-linear-discrete-time-systems)
+    - [Solving LQR Problem Using Q-Learning For Continuous Time Systems](#solving-lqr-problem-using-q-learning-for-continuous-time-systems)
 
 The objective of optimal control theory is to determine the control signals that will cause a process to satisfy the physical constraints and at the same time minimize (or maximize) some performance criterion.
 
@@ -350,7 +394,7 @@ where:
 
 These equations are iterated until $K$ converges to a stable value. For an example, see [LQR-DP.py](./Examples/LQR-DP.py) file.
 
-### Solving LQR Problem Using Q-Learning
+### Solving LQR Problem Using Q-Learning For Discrete Time Systems
 
 In general form $q^*(x_k, u_k)$ is:
 
@@ -463,4 +507,55 @@ $
 
 **Note 2:** To see an example check [LQR-NoModelRL.py](./Examples/LQR-NoModelRL.py).
 **Note 3** This is an iterative method so you have to compute $K$ until it converges.
+
+### Q-Learning For Non-Linear Discrete Time Systems
+Consider this affine system:
+
+$$
+x_{k+1} = f(x_k) + g(x_k)u_k
+$$
+
+In general, form of $Q$ is not known. So we need to approximate it. This method is called Adaptive or Approximate Dynamic Programming (ADP). One way to approximate the $Q$ is as follows:
+
+$$
+Q(x, u) = W^T\phi(x, u) = W^T\phi(z)
+$$
+
+In the function above, $\phi$ represents a kernel or an activation function. The most important consideration when choosing $\phi$ is that it must be such that $Q$ is convex. In the equation above, the only unknown is $W$, which can be estimated through interaction with the environment.
+
+**Note :** The previous section is a specific form of above equation.
+
+After estimating the $W$ you need to solve the below equation to get the optimal $u$:
+
+$$
+\frac{\partial}{\partial{u}}Q = \frac{\partial}{\partial{u}}(W^T\phi(x, u)) = 0 \implies u = \cdots
+$$
+
+**Note :** This process should be repeated until the policy ($u$) converges.
+**Note :** One way to find the $\phi$ is to first add everything you think might be useful to it, then eliminate those with optimal negligible optimal gains ($W$).
+
+### Solving LQR Problem Using Q-Learning For Continuous Time Systems
+This problem is not as easy as the discrete case. So usually it is solved partially model free. Consider a system as follows:
+
+$$
+\dot{x} = Ax(t) + Bu(t)
+$$
+
+For this system LQR-action-value function can be defined as :
+
+$$
+Q(x(t), u(t)) = \int_{t}^{\infty}(x(\tau)^TQx(\tau) + u(\tau)^TRu(\tau))d\tau
+$$
+
+Analytical solution to the Continuous LQR problem is:
+
+$$
+u = -Kx, \quad \quad \quad \quad K = R^-1B^TP
+$$
+
+$P$ is calculated by solving this algebraic Riccati equation:
+
+$$
+A^TP + PA - PBR^-1B^TP + Q = 0
+$$
 
