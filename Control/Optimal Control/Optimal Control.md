@@ -461,4 +461,6 @@ $
 \end{bmatrix}
 $
 
-**Note 2:** To see an example check [LQR-NoModelRL.py](./Examples/LQR-NoModelRL.py)
+**Note 2:** To see an example check [LQR-NoModelRL.py](./Examples/LQR-NoModelRL.py).
+**Note 3** This is an iterative method so you have to compute $K$ until it converges.
+

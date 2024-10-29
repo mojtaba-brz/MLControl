@@ -1,8 +1,8 @@
 import numpy as np
 from control import dlqr
 
-A = np.array([[0.9, 0.5], [-0.3, 0.8]])
-B = np.array([[0], [10]])
+A = np.array([[0.9, 1.5], [-0.3, 0.8]])
+B = np.array([[0], [1]])
 Q = np.eye(2, 2)
 R = np.eye(1, 1) * .1
 
@@ -54,7 +54,7 @@ for _ in range(50):
     R_bar     = np.zeros((sim_steps, 1))
     for k in range(sim_steps) :
         x_pre = np.random.rand(n_x , 1)
-        u_pre = -K @ x_pre + np.random.rand() * 0.001 # a white noise added to make samples independent
+        u_pre = -K @ x_pre + np.random.rand() * 0.1 # a white noise added to make samples independent
         x = A @ x_pre + B @ u_pre
         u = -K @ x
         
