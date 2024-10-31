@@ -43,6 +43,7 @@
       - [Estimating $H$ Using Collected Data](#estimating-h-using-collected-data)
     - [Q-Learning For Non-Linear Discrete Time Systems](#q-learning-for-non-linear-discrete-time-systems)
     - [Solving LQR Problem Using Q-Learning For Continuous Time Systems](#solving-lqr-problem-using-q-learning-for-continuous-time-systems)
+    - [Solving LQT Problem Using RL](#solving-lqt-problem-using-rl)
 
 The objective of optimal control theory is to determine the control signals that will cause a process to satisfy the physical constraints and at the same time minimize (or maximize) some performance criterion.
 
@@ -179,10 +180,10 @@ The Discrete-Time Algebraic Riccati Equation (DARE) can be solved analytically u
 The Hamiltonian matrix $H$ is defined as:
 
 $$
-H = \begin{pmatrix}
+H = \begin{bmatrix}
 A_d & -B_d (R_d + B_d^T P_d B_d)^{-1} B_d^T P_d A_d \\
 -Q_d & A_d^T
-\end{pmatrix}
+\end{bmatrix}
 $$
 
 #### 2. Eigenvalue Decomposition
@@ -202,10 +203,10 @@ where:
 Partition the matrix $V$ into four blocks:
 
 $$
-V = \begin{pmatrix}
+V = \begin{bmatrix}
 V_{11} & V_{12} \\
 V_{21} & V_{22}
-\end{pmatrix}
+\end{bmatrix}
 $$
 
 where:
@@ -276,7 +277,7 @@ $$
 The diagonal matrix $\Sigma$ is formed by placing the singular values $\sigma_1, \sigma_2, \dots, \sigma_n$ on its diagonal. If $m \geq n$, $\Sigma$ is an $m \times n$ matrix with the singular values on the diagonal:
 
 $$
-\Sigma = \begin{pmatrix}
+\Sigma = \begin{bmatrix}
 \sigma_1 & 0 & \cdots & 0 \\
 0 & \sigma_2 & \cdots & 0 \\
 \vdots & \vdots & \ddots & \vdots \\
@@ -284,18 +285,18 @@ $$
 0 & 0 & \cdots & 0 \\
 \vdots & \vdots & \ddots & \vdots \\
 0 & 0 & \cdots & 0
-\end{pmatrix}
+\end{bmatrix}
 $$
 
 If $m < n$, $\Sigma$ is an $m \times n$ matrix with the singular values on the diagonal:
 
 $$
-\Sigma = \begin{pmatrix}
+\Sigma = \begin{bmatrix}
 \sigma_1 & 0 & \cdots & 0 \\
 0 & \sigma_2 & \cdots & 0 \\
 \vdots & \vdots & \ddots & \vdots \\
 0 & 0 & \cdots & \sigma_m
-\end{pmatrix}
+\end{bmatrix}
 $$
 
 ###### 6. Compute the Left Singular Vectors
@@ -518,7 +519,7 @@ $$
 In general, form of $Q$ is not known. So we need to approximate it. This method is called Adaptive or Approximate Dynamic Programming (ADP). One way to approximate the $Q$ is as follows:
 
 $$
-Q(x, u) = W^T\phi(x, u) = W^T\phi(z)
+q(x, u) = W^T\phi(x, u) = W^T\phi(z)
 $$
 
 In the function above, $\phi$ represents a kernel or an activation function. The most important consideration when choosing $\phi$ is that it must be such that $Q$ is convex. In the equation above, the only unknown is $W$, which can be estimated through interaction with the environment.
@@ -528,7 +529,7 @@ In the function above, $\phi$ represents a kernel or an activation function. The
 After estimating the $W$ you need to solve the below equation to get the optimal $u$:
 
 $$
-\frac{\partial}{\partial{u}}Q = \frac{\partial}{\partial{u}}(W^T\phi(x, u)) = 0 \implies u = \cdots
+\frac{\partial}{\partial{u}}q = \frac{\partial}{\partial{u}}(W^T\phi(x, u)) = 0 \implies u = \cdots
 $$
 
 **Note :** This process should be repeated until the policy ($u$) converges.
@@ -541,21 +542,71 @@ $$
 \dot{x} = Ax(t) + Bu(t)
 $$
 
-For this system LQR-action-value function can be defined as :
+If (A, B) be stabilizable, for this system LQR-action-value function can be defined as :
 
 $$
-Q(x(t), u(t)) = \int_{t}^{\infty}(x(\tau)^TQx(\tau) + u(\tau)^TRu(\tau))d\tau
+q(x(t), u(t)) = \int_{t}^{\infty}(x(\tau)^TQx(\tau) + u(\tau)^TRu(\tau))d\tau
 $$
 
-Analytical solution to the Continuous LQR problem is:
+With $Q \geq 0$, $R > 0$ and $(Q^{1/2}, A)$ detectable.
+
+**Reminder :** [Analytical solution to the Continuous LQR problem](#solution-approach-for-continuous-time-systems)
+
+In a more general form, the above equation can be written as:
 
 $$
-u = -Kx, \quad \quad \quad \quad K = R^-1B^TP
+q(x(t), u(t)) = \int_{t}^{\infty}r(x(\tau), u(\tau))d\tau
 $$
 
-$P$ is calculated by solving this algebraic Riccati equation:
+$$
+\implies \dot{q}(x(t), u(t)) = r(x(t), u(t))
+$$
 
 $$
-A^TP + PA - PBR^-1B^TP + Q = 0
+\implies \nabla_{x, u} {q}(x(t), u(t)) \frac{d}{dt} \begin{bmatrix}
+x(t) \\
+u(t)
+\end{bmatrix} = r(x(t), u(t))
 $$
+
+For solving this problem, We use a technic called integral RL, considering the action function as:
+
+$$
+q(x(t), u(t)) = \begin{bmatrix}
+x(t) \\
+u(t)
+\end{bmatrix}^T P \begin{bmatrix}
+x(t) \\
+u(t)
+\end{bmatrix} = \int_{t}^{t + \Delta t}r(x(\tau), u(\tau))d\tau + \begin{bmatrix}
+x(t + \Delta t) \\
+u(t + \Delta t)
+\end{bmatrix}^T P \begin{bmatrix}
+x(t + \Delta t) \\
+u(t + \Delta t)
+\end{bmatrix}
+$$
+
+$$
+\implies \begin{bmatrix}
+x(t) - x(t + \Delta t) \\
+u(t) - u(t + \Delta t)
+\end{bmatrix}^T P \begin{bmatrix}
+x(t) - x(t + \Delta t) \\
+u(t) - u(t + \Delta t)
+\end{bmatrix} = \int_{t}^{t + \Delta t}r(x(\tau), u(\tau))d\tau
+$$
+
+By defining $z(t) = \begin{bmatrix}
+x(t) \\
+u(t)
+\end{bmatrix}$:
+
+$$
+\bar{P}(\bar{z}(t) - \bar{z}(t + \Delta t)) =  \int_{t}^{t + \Delta t}r(x(\tau), u(\tau))d\tau
+$$
+
+**Note :** To see an example, check [LQR-NoModeRL-CLTI.py](./Examples/LQR-NoModeRL-CLTI.py).
+
+### Solving LQT Problem Using RL
 

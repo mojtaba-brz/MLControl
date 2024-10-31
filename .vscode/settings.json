@@ -3,6 +3,7 @@
         "Generalizabelity",
         "Interpretabelity",
         "linalg",
-        "Overfit"
+        "Overfit",
+        "stabilizable"
     ]
 }
