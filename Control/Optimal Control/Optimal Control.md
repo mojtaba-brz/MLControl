@@ -450,7 +450,7 @@ $$
 In order to solve the above equation for H, it is better to reorganize it into the form below:
 
 $$
-\bar{z}_k^T\bar{H} = -x_k^T Q x_k - u_k^T R u_k + \bar{z}_{k+1}^T\bar{H} 
+\bar{z}_k^T\bar{H} = -x_k^T Q x_k - u_k^T R u_k + \bar{z}_{k+1}^T\bar{H}
 $$
 
 $$
@@ -484,6 +484,7 @@ z_2z_3 \\
 $
 
 By gathering all collected data into matrix $\bar{Z}$ and $\bar{R}$, $H$ can be calculated using least square. 
+
 **Note :** Samples must be independent. One way to do so is to use white noise in inputs.
 
 $$
@@ -533,7 +534,10 @@ $$
 $$
 
 **Note :** This process should be repeated until the policy ($u$) converges.
+
 **Note :** One way to find the $\phi$ is to first add everything you think might be useful to it, then eliminate those with optimal negligible optimal gains ($W$).
+
+**Ref :** Reinforcement learning and feedback control: Using natural decision methods to design optimal adaptive controllers (Book)
 
 ### Solving LQR Problem Using Q-Learning For Continuous Time Systems
 This problem is not as easy as the discrete case. So usually it is solved partially model free. Consider a system as follows:
@@ -608,5 +612,50 @@ $$
 
 **Note :** To see an example, check [LQR-NoModeRL-CLTI.py](./Examples/LQR-NoModeRL-CLTI.py).
 
+**Ref :** Kiumarsi, Bahare, et al. "Reinforcement Q-learning for optimal tracking control of linear discrete-time systems with unknown dynamics." Automatica 50.4 (2014)
+
 ### Solving LQT Problem Using RL
 
+In a tracking problem we want the output of the system tracks reference signals $\vec{r}_s$. The main idea is to convert the LQT problem into a LQR problem then to solve it using the LQR problem tools. 
+
+The trick is as follows:
+
+$$
+q(x_k, u_k, r_{s_k}) = r_k + q(x_{k+1}, u_{k+1}, r_{s_{k+1}}),
+$$
+
+$$
+r_k = - \phi^T(y_k - r_{s_k}, u_k) \begin{bmatrix}
+Q & 0 \\
+0 & R
+\end{bmatrix}  \phi(y_k - r_{s_k}, u_k) = - \phi^T(z_k) \begin{bmatrix}
+Q & 0 \\
+0 & R
+\end{bmatrix}  \phi(z_k)
+$$
+
+If we consider q as follows:
+
+$$
+q(x_k, u_k, r_{s_k}) = \phi^T(z_k) H \phi(z_k)
+$$
+
+The optimum control input $u$ can be calculated as follows:
+
+$$
+\phi^T(z_k) H \phi(z_k) = r_k + \phi^T(z_{k+1}) H \phi(z_{k+1})
+$$
+
+$$
+\implies (\bar{\phi}(z_k) - \bar{\phi}(z_{k+1})) \bar{H} = r_k
+$$
+
+$\bar{H}$ matrix can be calculated using least square and control input can be calculated by solving this equation:
+
+$$
+\frac{\partial}{\partial{u}}q = \frac{\partial}{\partial{u}}(\bar{\phi}(z_k)\bar{H}) = 0 \implies u = \cdots
+$$
+
+**Note :** This process should be repeated until the policy ($u$) converges.
+
+**Ref :** Vrabie, Draguna, et al. "Adaptive optimal control for continuous-time linear systems based on policy iteration." Automatica 45.2 (2009)
