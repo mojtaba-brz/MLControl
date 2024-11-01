@@ -1,8 +1,9 @@
 # MLControl
 
 ## Machine Learning
-#### ML and Control Review
-#### Testing Different Models (Performance and Stability)
+### TensorFlow
+* [Getting Started](./Machine%20Learning/TensorFlow%20Tutorial/0.GettingStarted.ipynb)
+
 #### [Physics Informed Machine Learning](./Machine%20Learning/1.PhIML-An%20Introduction%20to%20Physics-Informed%20ML.md)
 
 ## Control
@@ -17,3 +18,14 @@
 ## Other Topics
 
 #### [Using MATLAB and Python Together](./Other%20Topics/MATLAB%20+%20Python/Tutorials.m)
+
+
+## Requirements
+### Python
+To run python codes, you need to have bellow modules (Python 11)
+1. numpy
+2. control
+3. [tensorflow](https://www.tensorflow.org/install) (v2.18)
+
+### MATLAB
+To run SIMULINK models, you need to have at least, MATLAB 2023a.
