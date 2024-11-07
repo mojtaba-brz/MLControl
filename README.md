@@ -11,6 +11,8 @@
 #### [Model Predictive Control](./Control/MPC/Model%20Predictive%20Control.md)
 #### [Optimal Control Theory](./Control/Optimal%20Control/Optimal%20Control.md)
 * [Reinforcement Learning Application](./Control/Optimal%20Control/Optimal%20Control.md/#reinforcement-learning-application)
+#### Technics
+* [How To Control A System With Feedback Noise and Pure Delay](./Control/Technics/How%20To%20Control%20A%20System%20With%20Feedback%20Noise%20and%20Pure%20Delay.md)
 ## Path Planning And Guidance
 
 ## Simulation
