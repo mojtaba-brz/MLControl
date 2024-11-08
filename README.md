@@ -9,6 +9,10 @@
 * [Load CSV Data](./Machine%20Learning/TensorFlow%20Tutorial/3.LoadCSVdata.ipynb)
 * [Keras Guid](./Machine%20Learning/TensorFlow%20Tutorial/4.Keras%20Guid.md)
 * [Custom Training Loop](./Machine%20Learning/TensorFlow%20Tutorial/5.CustomTrainingLoop.ipynb)
+* [Customization Basics](./Machine%20Learning/TensorFlow%20Tutorial/6.CustomizationBasics.ipynb)
+* [Custom Layers](./Machine%20Learning/TensorFlow%20Tutorial/7.CustomLayers.ipynb)
+* [Custom Training Walkthrough](./Machine%20Learning/TensorFlow%20Tutorial/8.CustomTrainingWalkthrough.ipynb)
+* [Diving Into RL Using TF-Agents](./Machine%20Learning/TensorFlow%20Tutorial/9.RL-Intro-ActorCritic.ipynb)
 
 ### [Physics Informed Machine Learning](./Machine%20Learning/1.PhIML-An%20Introduction%20to%20Physics-Informed%20ML.md)
 
