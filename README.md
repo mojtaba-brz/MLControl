@@ -1,10 +1,12 @@
 # MLControl
 
 ## Machine Learning
+### [Artificial Neural Network](./Machine%20Learning/Artificial%20Neural%20Network/0.ANN.md)
 ### TensorFlow
 * [Getting Started](./Machine%20Learning/TensorFlow%20Tutorial/0.GettingStarted.ipynb)
+* [A Comparison](./Machine%20Learning/TensorFlow%20Tutorial/1.AComparisonOnDifferentANNs.ipynb)
 
-#### [Physics Informed Machine Learning](./Machine%20Learning/1.PhIML-An%20Introduction%20to%20Physics-Informed%20ML.md)
+### [Physics Informed Machine Learning](./Machine%20Learning/1.PhIML-An%20Introduction%20to%20Physics-Informed%20ML.md)
 
 ## Control
 #### [Modern Control Introduction](./Control/Modern%20Control%20Introduction/Modern%20Control%20Introduction.md)
