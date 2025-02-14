@@ -9,6 +9,9 @@
     - [Goals and Rewards](#goals-and-rewards)
     - [Returns and Episodes](#returns-and-episodes)
     - [Policies and Value Functions](#policies-and-value-functions)
+    - [Optimal Policies and Optimal Value Functions](#optimal-policies-and-optimal-value-functions)
+  - [Dynamic Programming](#dynamic-programming)
+    - [Policy Evaluation (Prediction)](#policy-evaluation-prediction)
   - [References](#references)
 
 ## Introduction
@@ -71,7 +74,7 @@ The reward signal is your way of communicating to the robot what you want it to 
 In general, we seek to maximize the expected return, where the return, denoted $G_t$, is defined as some specific function of the reward sequence.
 
 $$
-G_t = \sum_{k=1}^{T} \gamma R_{t+k} = R_{t+1} + \gamma G_{t+1}
+G_t = \sum_{k=1}^{T} \gamma^{k-1} R_{t+k} = R_{t+1} + \gamma G_{t+1}
 $$
 
 $
@@ -94,8 +97,46 @@ The value function of a state $s$ under a policy $\pi$, denoted $v_\pi(s)$, is t
 when starting in s and following $\pi$ thereafter. For MDPs, we can define $v_\pi$ formally by
 
 $$
-v_\pi(s) = 
+v_\pi(s) = E[G_t|S_t = s] \\ 
+\implies v_\pi(s) = E[\sum_{k=1}^{T} \gamma^{k-1} R_{t+k}|S_t = s] \\
+\implies \boxed{v_\pi(s) = \sum_{a} \pi(a|s) \sum_{s', r} p(s', r | s, a)(r + \gamma v_{\pi}(s'))}
 $$
+
+Similarly, we define the value of taking action a in state s under a policy $\pi$, denoted $q_\pi(s, a)$ ( action-value function), as the expected return starting from s, taking the action a, and thereafter
+following policy $\pi$:
+
+$$
+q_\pi(s, a) = E[G_t|S_t = s, A_t = a] \\ 
+\implies q_\pi(s, a) = E[\sum_{k=1}^{T} \gamma^{k-1} R_{t+k}|S_t = s, A_t = a] \\ 
+\implies \boxed{q_\pi(s, a) = \sum_{s', r} p(s', r | s, a)(r + \gamma v_{\pi}(s'))}
+$$
+
+### Optimal Policies and Optimal Value Functions
+A policy $\pi$ is defined to be better than or equal to a policy $\pi'$ if its expected return is greater than or equal to that of $\pi'$ for all states. In other words, $\pi$ > $\pi'$ if and only if $v_\pi$(s) > $v_{\pi'}$(s) for all $s \in S$. There is always at least one policy that is better than or equal to all other policies. This is an optimal policy. Although there may be more than one, we denote all the optimal policies by $\pi*$. They share the same state-value function, called the optimal state-value function, denoted $v_*$, and defined as
+
+$$
+v_{*}(s) = \max_{\pi} v_{\pi}(s) \\
+\implies v_{*}(s) = \max_{a} \sum_{s', r} p(s', r | s, a)(r + \gamma v_{*}(s'))
+$$
+
+Optimal policies also share the same optimal action-value function,
+
+$$
+q_{*}(s,a) = \max_{\pi} q_{\pi}(s,a) \\
+\implies q_{*}(s,a) = \sum_{s', r} p(s', r | s, a)(r + \gamma \max_{a'}q_{*}(s', a'))
+$$
+
+## Dynamic Programming
+The term dynamic programming (DP) refers to a collection of algorithms that can be used to compute optimal policies given a perfect model of the environment as a Markov decision process (MDP). Classical DP algorithms are of limited utility in reinforcement learning both because of their assumption of a perfect model and because of their great computational expense, but they are still important theoretically. DP provides an essential foundation for the understanding of the methods presented in RL. In fact, all of these methods can be viewed as attempts to achieve much the same e↵ect as DP, only with less computation and without assuming a perfect model of the environment.
+
+The key idea of DP, and of reinforcement learning generally, is the use of value functions to organize and structure the search for good policies. We can easily obtain optimal policies once we have found the optimal value functions, $v_*$ or $q_*$, which satisfy the Bellman optimality equations.
+
+### Policy Evaluation (Prediction)
+
+First we consider how to compute the state-value function $v_\pi$ for an arbitrary policy $\pi$. This is called policy evaluation in the DP literature. We also refer to it as the prediction problem.
+
+If the environment’s dynamics are completely known, then problem becomes a system of $|S|$ simultaneous linear equations in $|S|$ unknowns (the $v_\pi(s)$, $s \in S$). In principle, its solution is a straightforward, if tedious, computation.
+
 
 ## References
 1. (book) Reinforcement Learning: An Introduction [Sutton & Burto]
