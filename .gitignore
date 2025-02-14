@@ -4,5 +4,7 @@
 *.asv
 *info.mat
 *.pyc
+Lab.*
+lab.*
 
 MLCPyEnv

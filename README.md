@@ -2,6 +2,8 @@
 
 ## Machine Learning
 ### [Artificial Neural Network](./Machine%20Learning/Artificial%20Neural%20Network/0.ANN.md)
+### Reinforcement Learning
+* [Fundamentals of RL](./Machine%20Learning/RL/Fundamentals%20of%20RL.md)
 ### [TensorFlow](./Machine%20Learning/TensorFlow%20Tutorial/-1.TableOfContent.md)
 ### [Physics Informed Machine Learning](./Machine%20Learning/1.PhIML-An%20Introduction%20to%20Physics-Informed%20ML.md)
 
