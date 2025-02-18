@@ -41,11 +41,11 @@ $$
 p(s', r | s, a) = Pr[S_{t+1} = s', R_{t+1} = r | S_{t} = s, A_{t} = a]
 $$
 
-$
-S \text{: States} \\
-R \text{: Reward} \\
-A \text{: Action}
-$
+$S \text{: States}$
+
+$R \text{: Reward}$
+
+$A \text{: Action}$
 
 From the four-argument dynamics function, p, one can compute anything else one might want to know about the environment, such as the *state-transition probabilities*,
 
@@ -77,10 +77,9 @@ $$
 G_t = \sum_{k=1}^{T} \gamma^{k-1} R_{t+k} = R_{t+1} + \gamma G_{t+1}
 $$
 
-$
-T \text{: Final time step} \\
-\gamma \text{: Discount rate, \space \space \space \space} 0\le \gamma\le 1
-$
+$T \text{: Final time step}$
+
+$\gamma \text{: Discount rate, } \space \space \space \space 0\le \gamma\le 1$
 
 Each episode ends in a special
 state called the terminal state, followed by a reset to a standard starting state or to a
@@ -97,8 +96,14 @@ The value function of a state $s$ under a policy $\pi$, denoted $v_\pi(s)$, is t
 when starting in s and following $\pi$ thereafter. For MDPs, we can define $v_\pi$ formally by
 
 $$
-v_\pi(s) = E[G_t|S_t = s] \\ 
-\implies v_\pi(s) = E[\sum_{k=1}^{T} \gamma^{k-1} R_{t+k}|S_t = s] \\
+v_\pi(s) = E[G_t|S_t = s] 
+$$
+
+$$
+\implies v_\pi(s) = E[\sum_{k=1}^{T} \gamma^{k-1} R_{t+k}|S_t = s] 
+$$
+
+$$
 \implies \boxed{v_\pi(s) = \sum_{a} \pi(a|s) \sum_{s', r} p(s', r | s, a)(r + \gamma v_{\pi}(s'))}
 $$
 
@@ -106,8 +111,14 @@ Similarly, we define the value of taking action a in state s under a policy $\pi
 following policy $\pi$:
 
 $$
-q_\pi(s, a) = E[G_t|S_t = s, A_t = a] \\ 
-\implies q_\pi(s, a) = E[\sum_{k=1}^{T} \gamma^{k-1} R_{t+k}|S_t = s, A_t = a] \\ 
+q_\pi(s, a) = E[G_t|S_t = s, A_t = a] 
+$$
+
+$$
+\implies q_\pi(s, a) = E[\sum_{k=1}^{T} \gamma^{k-1} R_{t+k}|S_t = s, A_t = a] 
+$$
+
+$$
 \implies \boxed{q_\pi(s, a) = \sum_{s', r} p(s', r | s, a)(r + \gamma v_{\pi}(s'))}
 $$
 
@@ -115,15 +126,21 @@ $$
 A policy $\pi$ is defined to be better than or equal to a policy $\pi'$ if its expected return is greater than or equal to that of $\pi'$ for all states. In other words, $\pi$ > $\pi'$ if and only if $v_\pi$(s) > $v_{\pi'}$(s) for all $s \in S$. There is always at least one policy that is better than or equal to all other policies. This is an optimal policy. Although there may be more than one, we denote all the optimal policies by $\pi*$. They share the same state-value function, called the optimal state-value function, denoted $v_*$, and defined as
 
 $$
-v_{*}(s) = \max_{\pi} v_{\pi}(s) \\
-\implies v_{*}(s) = \max_{a} \sum_{s', r} p(s', r | s, a)(r + \gamma v_{*}(s'))
+v_{*}(s) = \max_{\pi} v_{\pi}(s) 
+$$
+
+$$
+\implies v_{\*}(s) = \max_{a} \sum_{s', r} p(s', r \mid s, a)(r + \gamma v_{\*}(s'))
 $$
 
 Optimal policies also share the same optimal action-value function,
 
 $$
-q_{*}(s,a) = \max_{\pi} q_{\pi}(s,a) \\
-\implies q_{*}(s,a) = \sum_{s', r} p(s', r | s, a)(r + \gamma \max_{a'}q_{*}(s', a'))
+q_{*}(s,a) = \max_{\pi} q_{\pi}(s,a) 
+$$
+
+$$
+\implies q_{\*}(s,a) = \sum_{s', r} p(s', r \mid s, a)(r + \gamma \max_{a'}q_{\*}(s', a'))
 $$
 
 ## Dynamic Programming
