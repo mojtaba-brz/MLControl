@@ -83,7 +83,7 @@ $\gamma \text{: Discount rate, } \space \space \space \space 0\le \gamma\le 1$
 
 Each episode ends in a special
 state called the terminal state, followed by a reset to a standard starting state or to a
-sample from a standard distribution of starting states. Even if you think of episodes as ending in di↵erent ways, such as winning and losing a game, the next episode begins independently of how the previous one ended. Thus the episodes can all be considered to end in the same terminal state, with di↵erent rewards for the di↵erent outcomes. Tasks with episodes of this kind are called episodic tasks.
+sample from a standard distribution of starting states. Even if you think of episodes as ending in differerent ways, such as winning and losing a game, the next episode begins independently of how the previous one ended. Thus the episodes can all be considered to end in the same terminal state, with differerent rewards for the differerent outcomes. Tasks with episodes of this kind are called episodic tasks.
 
 On the other hand, in many cases the agent–environment interaction does not break naturally into identifiable episodes, but goes on continually without limit. For example, this would be the natural way to formulate an on-going process-control task, or an application to a robot with a long life span. We call these continuing tasks.
 
