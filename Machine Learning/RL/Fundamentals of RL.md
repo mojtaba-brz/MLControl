@@ -1,18 +1,42 @@
 # Fundamentals of Reinforcement Learning
 
-- [Fundamentals of Reinforcement Learning](#fundamentals-of-reinforcement-learning)
-  - [Introduction](#introduction)
-    - [Reinforcement Learning](#reinforcement-learning)
-    - [Elements of Reinforcement Learning](#elements-of-reinforcement-learning)
-  - [Core Ideas Of Reinforcement Learning Algorithms](#core-ideas-of-reinforcement-learning-algorithms)
-    - [Markov Decision Process](#markov-decision-process)
-    - [Goals and Rewards](#goals-and-rewards)
-    - [Returns and Episodes](#returns-and-episodes)
-    - [Policies and Value Functions](#policies-and-value-functions)
-    - [Optimal Policies and Optimal Value Functions](#optimal-policies-and-optimal-value-functions)
-  - [Dynamic Programming](#dynamic-programming)
-    - [Policy Evaluation (Prediction)](#policy-evaluation-prediction)
-  - [References](#references)
+- [[#Introduction|Introduction]]
+	- [[#Introduction#Reinforcement Learning|Reinforcement Learning]]
+	- [[#Introduction#Elements of Reinforcement Learning|Elements of Reinforcement Learning]]
+- [[#Multi-armed Bandits (A review on RL concepts)|Multi-armed Bandits (A review on RL concepts)]]
+	- [[#Multi-armed Bandits (A review on RL concepts)#Some basic solution to exploration-exploitation dillema|Some basic solution to exploration-exploitation dillema]]
+- [[#How to do Real World RL|How to do Real World RL]]
+	- [[#How to do Real World RL#Priorities|Priorities]]
+- [[#Core Ideas Of Reinforcement Learning Algorithms|Core Ideas Of Reinforcement Learning Algorithms]]
+	- [[#Core Ideas Of Reinforcement Learning Algorithms#Markov Decision Process|Markov Decision Process]]
+	- [[#Core Ideas Of Reinforcement Learning Algorithms#Goals and Rewards|Goals and Rewards]]
+	- [[#Core Ideas Of Reinforcement Learning Algorithms#Returns and Episodes|Returns and Episodes]]
+	- [[#Core Ideas Of Reinforcement Learning Algorithms#Policies and Value Functions|Policies and Value Functions]]
+	- [[#Core Ideas Of Reinforcement Learning Algorithms#Optimal Policies and Optimal Value Functions|Optimal Policies and Optimal Value Functions]]
+- [[#Dynamic Programming|Dynamic Programming]]
+	- [[#Dynamic Programming#Policy Evaluation (Prediction)|Policy Evaluation (Prediction)]]
+	- [[#Dynamic Programming#Policy Improvement|Policy Improvement]]
+	- [[#Dynamic Programming#Policy Iteration|Policy Iteration]]
+	- [[#Dynamic Programming#Generalized Policy Iteration|Generalized Policy Iteration]]
+	- [[#Dynamic Programming#Efficiency of Dynamic Programming|Efficiency of Dynamic Programming]]
+- [[#Monte Carlo Methods|Monte Carlo Methods]]
+	- [[#Monte Carlo Methods#Monte Carlo Prediction|Monte Carlo Prediction]]
+	- [[#Monte Carlo Methods#Monte Carlo Estimation of Action Values|Monte Carlo Estimation of Action Values]]
+	- [[#Monte Carlo Methods#Monte Carlo Control|Monte Carlo Control]]
+	- [[#Monte Carlo Methods#Monte Carlo Control without Exploring Starts|Monte Carlo Control without Exploring Starts]]
+		- [[#Monte Carlo Control without Exploring Starts#On-Policy MC Control|On-Policy MC Control]]
+		- [[#Monte Carlo Control without Exploring Starts#Off-Policy MC Control via Importance Sampling|Off-Policy MC Control via Importance Sampling]]
+- [[#Temporal-Difference Learning|Temporal-Difference Learning]]
+	- [[#Temporal-Difference Learning#TD Prediction|TD Prediction]]
+	- [[#Temporal-Difference Learning#Advantages of TD Prediction Methods|Advantages of TD Prediction Methods]]
+	- [[#Temporal-Difference Learning#Sarsa: On-policy TD Control|Sarsa: On-policy TD Control]]
+	- [[#Temporal-Difference Learning#Q-learning: Off-policy TD Control|Q-learning: Off-policy TD Control]]
+	- [[#Temporal-Difference Learning#Expected Sarsa|Expected Sarsa]]
+	- [[#Temporal-Difference Learning#Maximization Bias and Double Learning|Maximization Bias and Double Learning]]
+	- [[#Temporal-Difference Learning#Open challenges|Open challenges]]
+- [[#$n$-step Bootstrapping|$n$-step Bootstrapping]]
+- [[#References|References]]
+
 
 ## Introduction
 The idea that we learn by interacting with our environment is probably the first to occur to us when we think about the nature of learning. When an infant plays, waves its arms, or looks about, it has no explicit teacher, but it does have a direct sensorimotor connection to its environment. Exercising this connection produces a wealth of information about cause and effect, about the consequences of actions, and about what to do in order to achieve goals. Throughout our lives, such interactions are undoubtedly a major source of knowledge about our environment and ourselves. Whether we are learning to drive a car or to hold a  onversation, we are acutely aware of how our environment responds to what we do, and we seek to influence what happens through our behavior. Learning from interaction is a foundational idea underlying nearly all theories of learning and intelligence.
@@ -498,6 +522,13 @@ Update rule:
 Q(s_t, a_t) += \alpha(r_{t+1} + \gamma~ ~\sum_a\pi(a|s_{t+1})(Q(s_{t+1}, a) - Q(s_t, a_t)) 
 $$
 
+Expected Sarsa is more complex computationally than Sarsa but, in return, it eliminates the variance due to the random selection of $A_t+1$. Given the same amount of experience we might expect it to perform slightly better than Sarsa, and indeed it generally does.
+
+![](Attachements/Pasted%20image%2020250407213532.png)
+
+in general Expected Sarsa might use a policy different from the target policy ⇡ to generate behavior, in which case it becomes an off-policy algorithm. For example, suppose $\pi$ is the greedy policy while behavior is more exploratory; then Expected Sarsa is exactly Q-learning. In this sense  
+Expected Sarsa subsumes and generalizes Q-learning while reliably improving over Sarsa. Except for the small additional computational cost, Expected Sarsa may completely dominate both of the other more-well-known TD control algorithms.
+
 ### Maximization Bias and Double Learning
 All the control algorithms that we have discussed so far involve maximization in the construction of their target policies. For example, in Q-learning the target policy is the greedy policy given the current action values, which is defined with a max, and in Sarsa the policy is often $\epsilon-greedy$, which also involves a maximization operation. In these algorithms, a maximum over estimated values is used implicitly as an estimate of the maximum value, which can lead to a significant positive bias. To see why, consider a single state s where there are many actions a whose true values, $q(s, a)$, are all zero but whose estimated values, $Q(s, a)$, are uncertain and thus distributed some above and some below zero. The maximum of the true values is zero, but the maximum of the estimates is positive, a positive bias. We call this maximization bias.
 
@@ -535,6 +566,9 @@ while True:
 
 
 ## $n$-step Bootstrapping
+TODO
+
+## Planning and Learning with Tabular Methods
 
 
 
