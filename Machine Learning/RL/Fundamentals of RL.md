@@ -395,8 +395,146 @@ While True:
 ```
 
 
-### Temporal-Difference Learning
+## Temporal-Difference Learning
+If one had to identify one idea as central and novel to reinforcement learning, it would  
+undoubtedly be temporal-difference (TD) learning. Like Monte Carlo methods,  
+TD methods can learn directly from raw experience without a model of the environment’s  
+dynamics. Like DP, TD methods update estimates based in part on other learned  
+estimates, without waiting for a final outcome (they bootstrap).
 
+### TD Prediction
+A simple every-visit Monte Carlo method suitable for nonstationary  
+environments is
+
+$$
+V(s) = V(s) + \alpha(G_t - V(s))
+$$
+
+Whereas Monte Carlo methods must wait until the end of the episode, TD methods need to wait only until the next time step.
+The simplest TD method makes the update:
+
+$$
+V(s) = V(s) + \alpha(r + \gamma V(s') - V(s))
+$$
+
+This TD method is called TD(0), or one-step TD. The box below specifies TD(0) completely in procedural form.
+
+**Tabular TD(0) Prediction** 
+```
+Input : Policy pi to eval
+
+Params : alpah, gamma
+
+Initialization: V(s) for all s and zero to terminal state
+
+while True:
+	initialize s
+	while s is not terminal:
+		a = pi(s)
+		r, s_next = env(a)
+		V(s) += alpha * (r + gamma * V(s_next) - V(s))
+		s = s_next
+```
+
+### Advantages of TD Prediction Methods
+- Naturally implemented in an online, fully incremental fashion
+- Do not require a model of the environment
+- For any fixed policy $\pi$, TD(0) has been proved to converge to $v_\pi$, in the mean for a constant step-size parameter if it is sufficiently small
+
+### Sarsa: On-policy TD Control
+Update rule:
+ 
+ $$
+Q(s_t, a_t) += \alpha(r_{t+1} + \gamma Q(s_{t+1}, a_{t+1}) - Q(s_t, a_t)) 
+ $$
+To use this update rule we need to have $s_t, a_t, r_{t+1}, s_{t+1}, a_{t+1}$ which can be said as SARSA.
+
+**SARSA Algorithm:**
+```
+Inputs: an epsilon-greedy policy, pi that uses Q
+
+Params : alpha, gamma
+
+Initialization : q
+
+while True:
+	choose an s
+	a = pi(s, q)
+	while s in not Terminal:
+		r, s_next = env(a)
+		a_next = pi(s_next, q)
+		q(s, a) += alpha * (r + gamma * q(s_next, a_next) - q(a, s))
+		s, a = s_next, a_next
+```
+
+### Q-learning: Off-policy TD Control
+Update rule:
+ 
+ $$
+Q(s_t, a_t) += \alpha(r_{t+1} + \gamma~ ~\max_a(Q(s_{t+1}), a) - Q(s_t, a_t)) 
+ $$
+
+Q-learning Algorithm:**
+```
+Inputs: an epsilon-greedy policy, pi that uses Q
+
+Params : alpha, gamma
+
+Initialization : q
+
+while True:
+	choose an s
+	while s in not Terminal:
+		a = pi(s, q)
+		r, s_next = env(a)
+		q(s, a) += alpha * (r + gamma * max(q(s_next, :)) - q(a, s))
+		s = s_next
+```
+
+### Expected Sarsa
+Update rule:
+ 
+ $$
+Q(s_t, a_t) += \alpha(r_{t+1} + \gamma~ ~\sum_a\pi(a|s_{t+1})(Q(s_{t+1}, a) - Q(s_t, a_t)) 
+$$
+
+### Maximization Bias and Double Learning
+All the control algorithms that we have discussed so far involve maximization in the construction of their target policies. For example, in Q-learning the target policy is the greedy policy given the current action values, which is defined with a max, and in Sarsa the policy is often $\epsilon-greedy$, which also involves a maximization operation. In these algorithms, a maximum over estimated values is used implicitly as an estimate of the maximum value, which can lead to a significant positive bias. To see why, consider a single state s where there are many actions a whose true values, $q(s, a)$, are all zero but whose estimated values, $Q(s, a)$, are uncertain and thus distributed some above and some below zero. The maximum of the true values is zero, but the maximum of the estimates is positive, a positive bias. We call this maximization bias.
+
+Are there algorithms that avoid maximization bias? To start, consider a bandit case in which we have noisy estimates of the value of each of many actions, obtained as sample averages of the rewards received on all the plays with each action. As we discussed above, there will be a positive maximization bias if we use the maximum of the estimates as an estimate of the maximum of the true values. One way to view the problem is that it is due to using the same samples (plays) both to determine the maximizing action and to estimate its value. Suppose we divided the plays in two sets and used them to learn two independent estimates, call them $Q_1(a)$ and $Q_2(a)$, each an estimate of the true value q(a), for all a 2 A. We could then use one estimate, say $Q_1(a)$, to determine the maximizing action $A\star = \max_a(Q_1(a))$, and the other, $Q_2(a)$, to provide the estimate of its value, $Q_2(A^\star) = Q_2(\max_a(Q1(a)))$. This estimate will then be unbiased in the sense that $E[Q2(A^\star)] = q(A^\star)$. We can also repeat the process with the role of the two estimates reversed to yield a second unbiased estimate $Q_1(\max_a(Q2(a)))$. This is the idea of double learning. Note that although we learn two estimates, only one estimate is updated on each play; double learning doubles the memory requirements, but does not increase the amount of computation per step.
+
+The idea of double learning extends naturally to algorithms for full MDPs. For example, the double learning algorithm analogous to Q-learning, called Double Q-learning, divides the time steps in two, perhaps by flipping a coin on each step. If the coin comes up heads, the update is
+
+ $$
+Q_1(s_t, a_t) += \alpha(r_{t+1} + \gamma~ ~Q_1(s_{t+1}, \max_a(Q_2(s_{t+1})), a) - Q(s_t, a_t)) 
+$$
+
+**Double Q-Learning Algorithm:**
+```
+Inputs: an epsilon-greedy policy, pi that uses Q
+
+Params: alpha, gamma
+
+Initialization: q1, q2 for all states and q(terminal) = 0
+
+while True:
+	choose an s
+	while s is not terminal:
+		a = pi(s, q1 + q2) // the second input is not neccesserily this one
+		r, s_next = env(a)
+		if rand(0~1) > 0.5:
+			q1(s, a) += alpha (r + gamma * q1(s_next, greedy(s_next, q2)) - q1(s, a))
+		else:
+			q2(s, a) += alpha (r + gamma * q2(s_next, greedy(s_next, q1)) - q2(s, a))
+			s = s_next
+```
+
+
+### Open challenges
+- If both TD and Monte Carlo methods converge asymptotically to the correct predictions, then a natural next question is “Which gets there first?” In other words, which method learns faster? Which makes the more efficient use of limited data? At the current time this is an open question in the sense that no one has been able to prove mathematically that one method converges faster than the other. In fact, it is not even clear what is the most appropriate formal way to phrase this question! In practice, however, TD methods have usually been found to converge faster than constant-$\alpha$ MC methods on stochastic tasks.
+
+
+## $n$-step Bootstrapping
 
 
 
