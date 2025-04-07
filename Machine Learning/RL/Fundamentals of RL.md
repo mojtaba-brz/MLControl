@@ -30,6 +30,31 @@ The approach we explore here, called reinforcement learning, is much more focuse
 5. **Value function** : Roughly speaking, the value of a state is the total amount of reward an agent can expect to accumulate over the future, starting from that state. Whereas rewards determine the immediate, intrinsic desirability of environmental states, values indicate the long-term desirability of states after taking into account the states that are likely to follow and the rewards available in those states.In fact, the most important component of almost all reinforcement learning algorithms we consider is a method for efficiently estimating values.
 6. **Model of the environment (optional)**
 
+## Multi-armed Bandits (A review on RL concepts)
+Consider the following learning problem. You are faced repeatedly with a choice among k different options, or actions. After each choice you receive a numerical reward chosen from a stationary probability distribution that depends on the action you selected. Your objective is to maximize the expected total reward over some time period, for example, over 1000 action selections, or *time steps*. 
+
+our k-armed bandit problem, each of the k actions has an **expected or mean reward** given that that action is selected; let us call this the value of that action. If you knew the value of each action, then it would be trivial to solve the k-armed bandit problem: you would always select the action with highest value. If you maintain estimates of the action values, then at any time step there is at least one action whose estimated value is greatest. We call these the greedy actions. When you select one of these actions, we say that you are **exploiting** your current knowledge of the values of the actions. If instead you select one of the non-greedy actions, then we say you are **exploring**, because this enables you to improve your estimate of the non-greedy action’s value.
+
+For more informations on this subject, you can refer to RL:An introduction book by Sutton an Burto.
+
+### Some basic solution to exploration-exploitation dillema
+1. $\epsilon-greedy$ method
+	1. Choose the best action with 1-$\epsilon$ probability
+	2. Choose a random action with $\epsilon$ probability
+2. Optimistic initial values
+	1. Initialise the action-values or state values high enough to make sure the agent is going to try them all enough at the beginning 
+3. Upper confidence boundary (UCB)
+
+## How to do Real World RL
+The answer is, by shifting the learning process’ priorities. 
+### Priorities 
+• Generalisation over temporal credit assignments
+• Considering that the environment controls not the agent
+• Statistical efficiency over computational efficiency
+• You need to thinks about features not the states
+• Evaluation over Learning
+• Every policy you are implementing in the real world is important but in the simulator only the last policy is important
+
 ## Core Ideas Of Reinforcement Learning Algorithms
 ### Markov Decision Process
 MDPs are a mathematically idealized form of the reinforcement learning problem for which precise theoretical statements can be made. 
@@ -130,7 +155,7 @@ v_{*}(s) = \max_{\pi} v_{\pi}(s)
 $$
 
 $$
-\implies v_{\*}(s) = \max_{a} \sum_{s', r} p(s', r \mid s, a)(r + \gamma v_{\*}(s'))
+\implies v_{\star}(s) = \max_{a} \sum_{s', r} p(s', r \mid s, a)(r + \gamma v_{\star}(s'))
 $$
 
 Optimal policies also share the same optimal action-value function,
@@ -140,11 +165,11 @@ q_{*}(s,a) = \max_{\pi} q_{\pi}(s,a)
 $$
 
 $$
-\implies q_{\*}(s,a) = \sum_{s', r} p(s', r \mid s, a)(r + \gamma \max_{a'}q_{\*}(s', a'))
+\implies q_{\star}(s,a) = \sum_{s', r} p(s', r \mid s, a)(r + \gamma \max_{a'}q_{\star}(s', a'))
 $$
 
 ## Dynamic Programming
-The term dynamic programming (DP) refers to a collection of algorithms that can be used to compute optimal policies given a perfect model of the environment as a Markov decision process (MDP). Classical DP algorithms are of limited utility in reinforcement learning both because of their assumption of a perfect model and because of their great computational expense, but they are still important theoretically. DP provides an essential foundation for the understanding of the methods presented in RL. In fact, all of these methods can be viewed as attempts to achieve much the same e↵ect as DP, only with less computation and without assuming a perfect model of the environment.
+The term dynamic programming (DP) refers to a collection of algorithms that can be used to compute optimal policies given a perfect model of the environment as a Markov decision process (MDP). Classical DP algorithms are of limited utility in reinforcement learning both because of their assumption of a perfect model and because of their great computational expense, but they are still important theoretically. DP provides an essential foundation for the understanding of the methods presented in RL. In fact, all of these methods can be viewed as attempts to achieve much the same eect as DP, only with less computation and without assuming a perfect model of the environment.
 
 The key idea of DP, and of reinforcement learning generally, is the use of value functions to organize and structure the search for good policies. We can easily obtain optimal policies once we have found the optimal value functions, $v_*$ or $q_*$, which satisfy the Bellman optimality equations.
 
@@ -152,8 +177,229 @@ The key idea of DP, and of reinforcement learning generally, is the use of value
 
 First we consider how to compute the state-value function $v_\pi$ for an arbitrary policy $\pi$. This is called policy evaluation in the DP literature. We also refer to it as the prediction problem.
 
-If the environment’s dynamics are completely known, then problem becomes a system of $|S|$ simultaneous linear equations in $|S|$ unknowns (the $v_\pi(s)$, $s \in S$). In principle, its solution is a straightforward, if tedious, computation.
+If the environment’s dynamics are completely known, then problem becomes a system of $|S|$ simultaneous linear equations in $|S|$ unknowns (the $v_\pi(s)$, $s \in S$). In principle, its solution is a straightforward, if tedious, computation. For our purposes, iterative solution methods are most suitable:
+
+``` 
+Inputs : 
+	pi : the policy we want to evaluate,
+	Theta : iterations stop threshold,
+	Gamma : decaying factor of value-function
+
+Algorithm :
+	Initialise V for all states (S) and set V(terminal) to zero
+	loop:
+		delta = 0
+		For s in S:
+			v = V(s)
+			V(s) = sum(pi(s, a) * sum(p(s_p, r, s, a) * (r + gamma*V(s_p))))
+			Delta = max(delta, abs(v - V(s)))
+		if Delta > theta:
+			Break
+```
+
+### Policy Improvement
+Our reason for computing the value function for a policy is to help ﬁnd better policies. The key idea is to improve the policy $\pi$ such that:
+
+$$
+v_{\pi’} \ge v_{\pi}
+$$
+
+At least in a state. One option is to consider $\pi’$ as:
+
+$$
+\pi’ = \max_a \sum_{s’ , r} p(s’, r|s, a)(r + \gamma v(s‘))
+$$
+Following this idea, policy improvement thus must give us a strictly better policy except when the original policy is already optimal.
+
+### Policy Iteration
+Once a policy, $\pi$, has been improved using $v_\pi$ to yield a better policy, $\pi’$ , we can then compute $v_{\pi’}$  and improve it again to yield an even better $\pi^”$ . This way of ﬁnding an optimal policy is called policy iteration. A complete algorithm is given in the box below. Note that each policy evaluation, itself an iterative computation, is started with the value function for the previous policy. This typically results in a great increase in the speed of convergence of policy evaluation (presumably because the value function changes little from one policy to the next).
+
+```
+Policy Iteration Algorithm:
+	Initialise V for all states (S) and policy pi for all actions and states
+
+	Loop:
+		Run policy evaluation algorithm
+
+		policy_stable = true
+		for s in S:
+			old_action = pi(s)
+			pi(s) = argmax_a sum(p(s_p, r, s, a) * (r + gamma*V(s_p))))
+	
+			If old_action != pi(s):
+				policy_stable = false
+		
+		if policy_stable:
+			Break
+```
+
+### Generalized Policy Iteration
+Policy iteration consists of two simultaneous, interacting processes, one making the value function consistent with the current policy (policy evaluation), and the other making the policy greedy with respect to the current value function (policy improvement). In policy iteration, these two processes alternate, each completing before the other begins, but this is not really necessary. In value iteration, for example, only a single iteration of policy evaluation is performed in between each policy improvement. In asynchronous DP methods, the evaluation and improvement processes are interleaved at an even ﬁner grain. In some cases a single state is updated in one process before returning to the other. As long as both processes continue to update all states, the ultimate result is typically the same—convergence to the optimal value function and an optimal policy.
+We use the term generalized policy iteration (GPI) to refer to the general idea of letting policy-evaluation and policy- evaluation improvement processes interact, independent of the granularity and other details of the two processes. Almost all reinforcement learning methods are well described as GPI. That is, all have ⇡ V identiﬁable policies and value functions, with the policy always being improved with respect to the value function and the value ⇡ ! greedy(V ) function always being driven toward the value function for the improvement policy, as suggested by the diagram to the right. If both the evaluation process and the improvement process stabilize, that is, no longer produce changes, then the value function and policy must be optimal. The value function stabilizes only when it is consistent with the current policy, and the policy stabilizes only when it is greedy with respect to the current value function. Thus, both processes stabilize only when a policy has been found that is greedy with respect to its own evaluation function. This implies that the Bellman optimality equation holds, and thus that the policy and the value function are optimal.
+
+### Efficiency of Dynamic Programming
+
+DP may not be practical for very large problems, but compared with other methods for solving MDPs, DP methods are actually quite efficient. If n and k denote the number of states and actions, this means that a DP method takes a number of computational operations that is less than some polynomial function of n and k. A DP method is guaranteed to ﬁnd an optimal policy in polynomial time even though the total number of (deterministic) policies is $k^n$ . In this sense, DP is exponentially faster than any direct search in policy space could be, because direct search would have to exhaustively examine each policy to provide the same guarantee. Linear programming methods can also be used to solve MDPs, and in some cases their worst-case convergence guarantees are better than those of DP methods. But linear programming methods become impractical at a much smaller number of states than do DP methods (by a factor of about 100). For the largest problems, only DP methods are feasible.
+
+DP is sometimes thought to be of limited applicability because of the curse of dimensionality, the fact that the number of states often grows exponentially with the number of state variables. Large state sets do create di!culties, but these are inherent di!culties of the problem, not of DP as a solution method. In fact, DP is comparatively better suited to handling large state spaces than competing methods such as direct search and linear programming.
+
+On problems with large state spaces, asynchronous DP methods are often preferred. To complete even one sweep of a synchronous method requires computation and memory for every state. For some problems, even this much memory and computation is impractical, yet the problem is still potentially solvable because relatively few states occur along optimal solution trajectories. Asynchronous methods and other variations of GPI can be applied in such cases and may ﬁnd good or optimal policies much faster than synchronous methods can.
+
+## Monte Carlo Methods
+Monte Carlo methods require only experience—sample sequences of states, actions, and rewards from actual or simulated interaction with an environment. Learning from actual experience is striking because it requires no prior knowledge of the environment’s dynamics, yet can still attain optimal behavior.
+
+Monte Carlo methods are ways of solving the reinforcement learning problem based on averaging sample returns. To ensure that well-deﬁned returns are available, here we deﬁne Monte Carlo methods only for episodic tasks. The term “Monte Carlo” is often used more broadly for any estimation method whose operation involves a signiﬁcant random component. Here we use it speciﬁcally for methods based on averaging complete returns (as opposed to methods that learn from partial returns, considered in the next chapter).
+
+Because all the action selections are undergoing learning, the problem becomes nonstationary from the point of view of the earlier state. To handle the nonstationarity, we adapt the idea of general policy iteration (GPI). 
+
+### Monte Carlo Prediction
+We begin by considering Monte Carlo methods for learning the state-value function for a given policy. In particular, suppose we wish to estimate $v_{\pi(s)}$d, the value of a state s under policy $\pi$, given a set of episodes obtained by following $\pi$ and passing through $s$. Each occurrence of state $s$ in an episode is called a visit to $s$. Of course, $s$ may be visited multiple times in the same episode; let us call the ﬁrst time it is visited in an episode the ﬁrst visit to $s$. The ﬁrst-visit MC method estimates $v_{\pi(s)}$ as the average of the returns following ﬁrst visits to s, whereas the every-visit MC method averages the returns following all visits to $s$. These two Monte Carlo (MC) methods are very similar but have slightly different theoretical properties. First-visit MC has been most widely studied, dating back to the 1940s, and is the one we focus on in this chapter. Every-visit MC extends more naturally to function approximation and eligibility traces, as discussed in Chapters 9 and 12. First-visit MC is shown in procedural form in the box. Every-visit MC would be the same except without the check for $S_t$ having occurred earlier in the episode.
+
+**First-visit MC prediction, for estimating $V_{\pi(s)}$**
+```
+Input : policy pi
+
+Inititialzation:
+V(s) for all s in S
+Reterns(s) an empty list for all s in S
+
+While True:
+	Generate and episode following pi
+	G = 0
+	for t from T-1 to 0:
+		G = gamma * G + R(t+1)
+		if s(t) is not in s(t-1) to s(0):
+			Returns(s(t)) += G
+			V(s(t)) = average(Returns(s(t)))
+```
+
+### Monte Carlo Estimation of Action Values
+If a model is not available, then it is particularly useful to estimate action values (the values of state–action pairs) rather than state values. The only complication is that many state–action pairs may never be visited. If $\pi$ is a deterministic policy, then in following $\pi$ one will observe returns only for one of the actions from each state. With no returns to average, the Monte Carlo estimates of the other actions will not improve with experience. This is a serious problem because the purpose of learning action values is to help in choosing among the actions available in each state. To compare alternatives we need to estimate the value of all the actions from each state, not just the one we currently favor.
+
+This is the general problem of maintaining exploration. For policy evaluation to work for action values, we must assure continual exploration. One way to do this is by specifying that the episodes start in a state–action pair, and that every pair has a nonzero probability of being selected as the start. This guarantees that all state–action pairs will be visited an inﬁnite number of times in the limit of an inﬁnite number of episodes. We call this the assumption of exploring starts.
+
+The assumption of exploring starts is sometimes useful, but of course it cannot be relied upon in general, particularly when learning directly from actual interaction with an environment. In that case the starting conditions are unlikely to be so helpful. The most common alternative approach to assuring that all state–action pairs are encountered is to consider only policies that are stochastic with a nonzero probability of selecting all actions in each state. We discuss two important variants of this approach in later sections. For now, we retain the assumption of exploring starts and complete the presentation of a full Monte Carlo control method.
+
+### Monte Carlo Control
+For Monte Carlo policy iteration it is natural to alternate between evaluation and improvement on an episode-by-episode basis. After each episode, the observed returns are used for policy evaluation, and then the policy is improved at all the states visited in the episode. A complete simple algorithm along these lines, which we call Monte Carlo ES:
+**Monte Carlo ES for estimating the optimal policy $\pi_\star$
+```
+Initialisation:
+pi(s) for all actions in all states
+Q(s, a) Arbitrary for all s and a
+Returns(s, a) an empty list for s and a
+
+While True:
+	Choose s(0) and a(0) randomly
+	Generate an episode following pi and starting with s(0) and a(0)
+	G = 0
+
+	for t from T-1 to 0:
+		G = gamma * G + R(t+1)
+
+		if (s(t), a(t)) is not in (s(t-1), a(t-1)) to (s(0), a(0)):
+			append G to Returns(s(t), a(t))
+			Q(s(t), a(t)) = average(Returns(s(t), a(t))) 
+			pi(s(t))      = argmax_a(Q(s(t), :))
+ ```
+
+### Monte Carlo Control without Exploring Starts
+How can we avoid the unlikely assumption of exploring starts? How can we avoid the unlikely assumption of exploring starts? The only general way to ensure that all actions are selected inﬁnitely often is for the agent to continue to select them. There are two approaches to ensuring this, resulting in what we call on-policy methods and off-policy methods. On-policy methods attempt to evaluate or improve the policy that is used to make decisions, whereas off-policy methods evaluate or improve a policy different from that used to generate the data.
+
+#### On-Policy MC Control
+In on-policy control methods the policy is generally soft, meaning that $\pi(a | s) > 0$ for all $s \in S$ and all $a \in A(s)$, but gradually shifted closer and closer to a deterministic optimal policy. The on-policy method we present in this section uses $\epsilon-greedy$ policies, meaning that most of the time they choose an action that has maximal estimated action value, but with probability $\epsilon$ they instead select an action at random. The $\epsilon-greedy$ policies are examples of $\epsilon-soft$ policies. The complete algorithm for on-policy MC control is given in the box below:
+
+**On-policy MC Control Algorithm:**
+```
+Parameters : epsilon, gamma
+Initialisation:
+pi : an arbitrary e-greedy policy
+Q and Returns
+
+While True:
+	Generate an episode
+	G = 0
+	for t from T-1 to 0:
+		G = gamma * G + R(t+1)
+		
+		if (s(t), a(t)) is not in (s(t-1), a(t-1)) to (s(0), a(0)):
+			append G to Returns(s(t), a(t))
+			Q(s(t), a(t)) = average(Returns(s(t), a(t))) 
+			a_best        = argmax_a(Q(s(t), :))
+			update pi(s(t),:) based on a_best
+
+```
+
+#### Off-Policy MC Control via Importance Sampling
+All learning control methods face a dilemma: They seek to learn action values conditional on subsequent optimal behavior, but they need to behave non-optimally in order to explore all actions (to ﬁnd the optimal actions). How can they learn about the optimal policy while behaving according to an exploratory policy? A more straightforward approach is to use two policies, one that is learned about and that becomes the optimal policy, and one that is more exploratory and is used to generate behavior. The policy being learned about is called the target policy, and the policy used to generate behavior is called the behavior policy. In this case we say that learning is from data “off” the target policy, and the overall process is termed off-policy learning.
+
+Off-policy methods require additional concepts and notation, and because the data is due to a different policy, off-policy methods are often of greater variance and are slower to converge. On the other hand, off-policy methods are more powerful and general. They include on-policy methods as the special case in which the target and behavior policies are the same. Off-policy methods also have a variety of additional uses in applications. For example, they can often be applied to learn from data generated by a conventional non-learning controller, or from a human expert.
+
+In this section we begin the study of o↵-policy methods by considering the prediction problem, in which both target and behavior policies are ﬁxed. That is, suppose we wish to estimate $v_\pi$ or $q_\pi$ , but all we have are episodes following another policy $b$, where $b \ne \pi$. In this case, $\pi$ is the target policy, $b$ is the behavior policy, and both policies are considered ﬁxed and given.
+
+In order to use episodes from b to estimate values for$\pi$, we require that every action taken under $\pi$ is also taken, at least occasionally, under $b$. That is, we require that $\pi(a | s) > 0 \implies b(a | s) > 0$. This is called the assumption of coverage. It follows from coverage that $b$ must be stochastic in states where it is not identical to $\pi$. The target policy $\pi$, on the other hand, may be deterministic, and, in fact, this is a case of particular interest in control applications. In control, the target policy is typically the deterministic greedy policy with respect to the current estimate of the action-value function. This policy becomes a deterministic optimal policy while the behaviour policy remains stochastic and more exploratory, for example, an $\epsilon-greedy$ policy. In this section, however, we consider the prediction problem, in which $\pi$ is unchanging and given.
+
+Almost all off-policy methods utilise importance sampling, a general technique for estimating expected values under one distribution given samples from another. We apply importance sampling to off-policy learning by weighting returns according to the relative probability of their trajectories occurring under the target and behavior policies, called the *importance-sampling ratio*. Given a starting state $S_t$ , the probability of the subsequent state–action trajectory, $A_t$ , $S_{t+1} , A_{t+1} , . . . , S_T$ , occurring under any policy $\pi$ is
+
+$$
+\prod_{k=t}^{T-1} \pi_(a_k|s_k)p(s_{k+1}|s_k,a_k)
+$$
+
+Thus, the relative probability of the trajectory under the target and behavior policies (the importance sampling ratio) is
+
+$$
+\rho_{t:T-1} = \frac{\prod_{k=t}^{T-1} \pi_(a_k|s_k)p(s_{k+1}|s_k,a_k)}{\prod_{k=t}^{T-1} b_(a_k|s_k)p(s_{k+1}|s_k,a_k)} = \prod_{k=t}^{T-1}\frac{\pi_(a_k|s_k)}{b_(a_k|s_k)}
+$$
+
+Although the trajectory probabilities depend on the MDP’s transition probabilities, which are generally unknown, they appear identically in both the numerator and denominator, and thus cancel. The importance sampling ratio ends up depending only on the two policies and the sequence, not on the MDP. The ratio $\rho_{t:T-1}$ transforms the returns to have the right expected value:
+
+$$
+v_{\pi(s)} = E[\rho_{t:T-1}G_t~|~s = S_t]
+$$
+
+**Ordinary Importance Sampling:**
+$$
+v_{\pi(s)} \doteq \frac{\sum_{\text{all episodes}}\rho_{t:T-1}G_t~|~s = S_t}{\text{num of state s was visited in total}} ~~~~~~~~~~~ \text{every visit MC}
+$$
+**Note:** $v_{\pi(s)}$ is zero if the denominator is zero.
+
+**Weighted Importance Sampling:**
+
+$$
+v_{\pi(s)} \doteq \frac{\sum_{\text{all episodes}}\rho_{t:T-1}G_t~|~s = S_t}{\sum_{\text{all episodes}}\rho_{t:T-1}}
+$$
+
+**Note:** $v_{\pi(s)}$ is zero if the denominator is zero.
+
+Ordinary importance sampling is unbiased whereas weighted importance sampling is biased (though the bias converges asymptotically to zero). On the other hand, the variance of ordinary importance sampling is in general unbounded because the variance of the ratios can be unbounded, whereas in the weighted estimator the largest weight on any single return is one. In fact, assuming bounded returns, the variance of the weighted importance-sampling estimator converges to zero even if the variance of the ratios themselves is inﬁnite (Precup, Sutton, and Dasgupta 2001). In practice, the weighted estimator usually has dramatically lower variance and is strongly preferred. Nevertheless, we will not totally abandon ordinary importance sampling as it is easier to extend to the approximate methods using function approximation.
+
+The every-visit methods for ordinary and weighed importance sampling are both biased, though, again, the bias falls asymptotically to zero as the number of samples increases. In practice, every-visit methods are often preferred because they remove the need to keep track of which states have been visited and because they are much easier to extend to approximations.
+
+**Ordinary Importance Sampling Prediction using every visit MC Algorithm:**
+```
+Input : policy pi, b
+
+Inititialzation:
+V(s) for all s in S
+Reterns(s) an empty list for all s in S
+
+While True:
+	Generate and episode following pi
+	G = 0
+	W = 1 // rho
+	for t from T-1 to 0:
+		G   = gamma * G + R(t+1)
+		W   = W * pi(a(t), s(t)/b(a(t), s(t)
+		Append W * G to Returns(s(t))
+		V(s(t)) = average(Returns(s(t)))
+```
+
+
+### Temporal-Difference Learning
+
+
 
 
 ## References
-1. (book) Reinforcement Learning: An Introduction [Sutton & Burto]
+1. (Book) Reinforcement Learning: An Introduction [Sutton & Burto]
+2. (Course) [Reinforcement learning specialization](https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://www.coursera.org/specializations/reinforcement-learning&ved=2ahUKEwi-2-Prop2MAxUIcKQEHeEwDgcQFnoECBoQAQ&usg=AOvVaw1VX-UHhG8EU2QL8dIYAas4) 
