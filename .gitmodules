@@ -1,0 +1,3 @@
+[submodule "Dynamics/MLib"]
+	path = Dynamics/MLib
+	url = git@github.com:NxRLab/ModernRobotics.git
