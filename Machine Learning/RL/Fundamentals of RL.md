@@ -3,6 +3,7 @@
 - [[#Introduction|Introduction]]
 	- [[#Introduction#Reinforcement Learning|Reinforcement Learning]]
 	- [[#Introduction#Elements of Reinforcement Learning|Elements of Reinforcement Learning]]
+	- [[#Introduction#A Map For Basic RL Algorithms|A Map For Basic RL Algorithms]]
 - [[#Multi-armed Bandits (A review on RL concepts)|Multi-armed Bandits (A review on RL concepts)]]
 	- [[#Multi-armed Bandits (A review on RL concepts)#Some basic solution to exploration-exploitation dillema|Some basic solution to exploration-exploitation dillema]]
 - [[#How to do Real World RL|How to do Real World RL]]
@@ -35,7 +36,29 @@
 	- [[#Temporal-Difference Learning#Maximization Bias and Double Learning|Maximization Bias and Double Learning]]
 	- [[#Temporal-Difference Learning#Open challenges|Open challenges]]
 - [[#$n$-step Bootstrapping|$n$-step Bootstrapping]]
+- [[#Planning and Learning with Tabular Methods|Planning and Learning with Tabular Methods]]
+	- [[#Planning and Learning with Tabular Methods#Models and Planning|Models and Planning]]
+	- [[#Planning and Learning with Tabular Methods#Dyna: Integrated Planning, Acting, and Learning|Dyna: Integrated Planning, Acting, and Learning]]
+	- [[#Planning and Learning with Tabular Methods#When the Model Is Wrong|When the Model Is Wrong]]
+	- [[#Planning and Learning with Tabular Methods#Prioritized Sweeping|Prioritized Sweeping]]
+	- [[#Planning and Learning with Tabular Methods#A few references for Control+RL|A few references for Control+RL]]
+- [[#On-policy Prediction with Approximation|On-policy Prediction with Approximation]]
+	- [[#On-policy Prediction with Approximation#The Prediction Objective ($\bar{VE}$)|The Prediction Objective ($\bar{VE}$)]]
+	- [[#On-policy Prediction with Approximation#Stochastic-gradient and Semi-gradient Methods|Stochastic-gradient and Semi-gradient Methods]]
+	- [[#On-policy Prediction with Approximation#Linear Methods|Linear Methods]]
+	- [[#On-policy Prediction with Approximation#Feature Construction for Linear Methods|Feature Construction for Linear Methods]]
+		- [[#Feature Construction for Linear Methods#Polynomials|Polynomials]]
+		- [[#Feature Construction for Linear Methods#Fourier Basis|Fourier Basis]]
+		- [[#Feature Construction for Linear Methods#Coarse Coding|Coarse Coding]]
+		- [[#Feature Construction for Linear Methods#Tile Coding|Tile Coding]]
+		- [[#Feature Construction for Linear Methods#Radial Basis Functions|Radial Basis Functions]]
+	- [[#On-policy Prediction with Approximation#Selecting Step-Size Parameters Manually|Selecting Step-Size Parameters Manually]]
+	- [[#On-policy Prediction with Approximation#Nonlinear Function Approximation: Artiﬁcial Neural Networks|Nonlinear Function Approximation: Artiﬁcial Neural Networks]]
+	- [[#On-policy Prediction with Approximation#F.A Challenges|F.A Challenges]]
+- [[#On-policy Control with Approximation|On-policy Control with Approximation]]
 - [[#References|References]]
+
+
 
 
 ## Introduction
@@ -53,6 +76,10 @@ The approach we explore here, called reinforcement learning, is much more focuse
 4. **Reward signal** : The agent’s sole objective is to maximize the total reward it receives over the long run. The reward signal thus defines what are the good and bad events for the agent. In a biological system, we might think of rewards as analogous to the experiences of pleasure or pain. They are the immediate and defining features of the problem faced by the agent. The reward signal is the primary basis for altering the policy; if an action selected by the policy is followed by low reward, then the policy may be changed to select some other action in that situation in the future. In general, reward signals may be stochastic functions of the state of the environment and the actions taken.
 5. **Value function** : Roughly speaking, the value of a state is the total amount of reward an agent can expect to accumulate over the future, starting from that state. Whereas rewards determine the immediate, intrinsic desirability of environmental states, values indicate the long-term desirability of states after taking into account the states that are likely to follow and the rewards available in those states.In fact, the most important component of almost all reinforcement learning algorithms we consider is a method for efficiently estimating values.
 6. **Model of the environment (optional)**
+
+### A Map For Basic RL Algorithms
+![](Attachements/Pasted%20image%2020250416091016.png)
+
 
 ## Multi-armed Bandits (A review on RL concepts)
 Consider the following learning problem. You are faced repeatedly with a choice among k different options, or actions. After each choice you receive a numerical reward chosen from a stationary probability distribution that depends on the action you selected. Your objective is to maximize the expected total reward over some time period, for example, over 1000 action selections, or *time steps*. 
@@ -498,7 +525,7 @@ Update rule:
 Q(s_t, a_t) += \alpha(r_{t+1} + \gamma~ ~\max_a(Q(s_{t+1}), a) - Q(s_t, a_t)) 
  $$
 
-Q-learning Algorithm:**
+**Q-learning Algorithm:**
 ```
 Inputs: an epsilon-greedy policy, pi that uses Q
 
@@ -569,6 +596,490 @@ while True:
 TODO
 
 ## Planning and Learning with Tabular Methods
+Our goal in this chapter is integration of model-based and model-free methods.
+
+**Note:** All practical robotic learning decisions is model based!
+	- It’s easier to die in simulation than in real!
+	- it’s much faster to learn using a model
+
+### Models and Planning
+By a model of the environment we mean anything that an agent can use to predict how the environment will respond to its actions. Given a state and an action, a model produces a prediction of the resultant next state and next reward (The reward part can be embedded inside the agent). If the model is stochastic, then there are several possible next states and next rewards, each with some probability of occurring. Some models produce a description of all possibilities and their probabilities; these we call distribution models. Other models produce just one of the possibilities, sampled according to the probabilities; these we call sample models.
+
+Distribution models are stronger than sample models in that they can always be used to produce samples. However, in many applications it is much easier to obtain sample models than distribution models. However, in many applications it is much easier to obtain sample models than distribution models. The dozen dice are a simple example of this. It would be easy to write a computer program to simulate the dice rolls and return the sum, but harder and more error-prone to ﬁgure out all the possible sums and their probabilities.
+
+Models can be used to mimic or simulate experience. Planning is the computational process that takes a model as input and produces or improves a policy for interacting with the modeled environment.
+
+$$
+Model ~~~ \xrightarrow{Planning} ~~~ Policy
+$$
+Approaches to planning:
+- State-space planning: a search through the state space for an optimal policy or an optimal path to a goal
+- plan-space planning: a search through the space of plans. Plan-space methods are difficult to apply effciently to the stochastic sequential decision problems that are the focus in reinforcement learning, and we do not consider them further (but see, e.g., Russell and Norvig, 2010).
+
+State-space planning methods common structure:
+
+$$
+Model \longrightarrow{} Simulated~Experiene \longrightarrow{} Value \longrightarrow{} Policy 
+$$
+
+Dynamic programming methods clearly ﬁt this structure. Viewing planning methods in this way emphasizes their relationship to the learning methods. 
+
+**Random-sample one-step tabular Q-planning algorithm:**
+```
+while True:
+	select a state s, and an action a randomly
+	r, s_next = sample_model(a, s)
+	q(s, a) += alpha(r + gamma max(q(s_next, :)) - q(s, a))
+```
+
+This algorithm converges to the optimal policy for the model under the same conditions that one-step tabular Q-learning converges to the optimal policy for the real environment.
+
+### Dyna: Integrated Planning, Acting, and Learning
+Dyna-Q is a simple architecture integrating the major functions needed in an online planning agent.
+
+<img src="Attachements/Pasted%20image%2020250410104720.png" alt="Dyna diagram" width="330"/>
+
+Dyna-Q includes all of the processes shown in the diagram above—planning, acting, model-learning, and direct RL—all occurring continually. The planning method is the random-sample one-step tabular Q-planning method. The model-learning method is also table-based and assumes the environment is deterministic. After each transition the model records in its table entry for $s, a$ and predictions for $s’, r$. 
+
+**Tabular Dyna-Q algorithm:**
+```
+Initialise: 
+	q for all s and a,
+	model as an empty dictionary
+	pi —> a epsilon-greedy policy
+	planning_steps = an integer
+	
+while True:
+	# direct RL
+	s = a random initial state
+	while s is not terminal:
+		a = pi(s)
+		s_next, r = env(a, s)
+		model(s, a) = s_next, r # Assuming deterministic environment
+		q(s, a) += alpha * (r + gamma * max(q(s_next, :)) - q(s, a))
+
+		with a probability (it can be 1 (to always learn during the timestep) to 0):
+			learn_from_model(planning_steps)
+
+
+def learn_from_model(planning_steps):
+	for i in range(planning_steps):
+		if there are not enough (s, a) pairs:
+			break
+			
+		select s and a randomly from available (s, a) pairs in model
+		s_next, r = model(a, s)
+		q(s, a) += alpha * (r + gamma * max(q(s_next, :)) - q(s, a))
+		
+```
+
+<img src="Attachements/Pasted%20image%2020250410112046.png" alt="Dyna diagram" width="450"/>
+
+### When the Model Is Wrong
+Models may be incorrect because the environment is stochastic and only a limited number of samples have been observed, or because the model was learned using function approximation that has generalized imperfectly, or simply because the environment has changed and its new behavior has not yet been observed. When the model is incorrect, the planning process is likely to compute a suboptimal policy. 
+
+In some cases, the suboptimal policy computed by planning quickly leads to the discovery and correction of the modeling error. This tends to happen when the model is optimistic in the sense of predicting greater reward or better state transitions than are actually possible. The planned policy attempts to exploit these opportunities and in doing so discovers that they do not exist.
+
+The general problem here is another version of the conﬂict between exploration and exploitation. In a planning context, exploration means trying actions that improve the model, whereas exploitation means behaving in the optimal way given the current model. We want the agent to explore to ﬁnd changes in the environment, but not so much that performance is greatly degraded. As in the earlier exploration/exploitation conﬂict, there probably is no solution that is both perfect and practical, but simple heuristics are often effective.
+
+The Dyna-Q+ agent that did solve the shortcut maze uses one such heuristic. This agent keeps track for each state–action pair of how many time steps have elapsed since the pair was last tried in a real interaction with the environment. The more time that has elapsed, the greater (we might presume) the chance that the dynamics of this pair has changed and that the model of it is incorrect. To encourage behavior that tests long-untried actions, a special “bonus reward” is given on simulated experiences involving these actions. In particular, if the modeled reward for a transition is $r$, and the transition has not been tried in $\tau$ time steps, then planning updates are done as if that transition produced a reward of $r + k \sqrt{\tau}$, for some small $k$. 
+
+<img src="Attachements/Pasted%20image%2020250410124313.png" alt="Dyna diagram" width="350"/>
+
+
+Note: The Dyna-Q+ agent was changed in two other ways as well. First, actions that had never been tried before from a state were allowed to be considered in the planning step (f) of the Tabular Dyna-Q algorithm in the box above. Second, the initial model for such actions was that they would lead back to the same state with a reward of zero.
+
+### Prioritized Sweeping
+TODO
+
+
+### A few references for Control+RL
+- Modern adaptive control and RL, Bagnel and Boots
+- Synthesis and stabilisation of complex behaviours through online trajectory optimisation
+- Katerina Fragkiadaki lecture notes on  trajectory optimization
+
+
+
+## On-policy Prediction with Approximation
+The novelty in this chapter is that the approximate value function is represented not as a table but as a parameterized functional form with weight vector $\vec{w}\in\mathbb{R}^d$ . We will write $\hat{v}(s,w) \approx v(s)$ for the approximate value of state $s$ given weight vector $\vec{w}$. Typically, the number of weights, and changing one weight changes the estimated value of many states. Consequently, when a single state is updated, the change generalizes from that state to affect the values of many other states. Such **generalization** makes the learning potentially more powerful but also potentially more difficult to manage and understand.
+
+**An other trade off:**
+- Generalisation : Is about treating states similarly
+- Discrimination : Is about treating states differently - A perfect example is tabular methods
+
+### The Prediction Objective ($\bar{VE}$)
+In the tabular case a continuous measure of prediction quality was not necessary because the learned value function could come to equal the true value function exactly. Moreover, the learned values at each state were decoupled—an update at one state affected no other. But with genuine approximation, an update at one state affects many others, and it is not possible to get the values of all states exactly correct. 
+
+By assumption we have far more states than weights, so making one state’s estimate more accurate invariably means making others’ less accurate. We are obligated then to say which states we care most about. We must specify a state distribution $\mu(s) \ge 0 ~~,~~ \sum_{s}\mu(s) = 1$, representing how much we care about the error in each state $s$. By the error in a state s we mean the square of the difference between the approximate value $\hat{v}(s,w)$ and the true value $v (s)$. Weighting this over the state space by $\mu$ , we obtain a natural objective function, the *Mean Squared Value Error*, denoted VE:
+
+$$
+\bar{VE}(\mathbf{w}) = \sum_{s}\mu(s)\left [v(s) - \hat{v}(s, \mathbf{w})\right ]^2
+$$
+
+But it is not completely clear that the VE is the right performance objective for reinforcement learning. Remember that our ultimate purpose—the reason we are learning a value function—is to ﬁnd a better policy. The best value function for this purpose is not necessarily the best for minimizing VE. Nevertheless, it is not yet clear what a more useful alternative goal for value prediction might be. For now, we will focus on VE.
+
+### Stochastic-gradient and Semi-gradient Methods
+A good strategy in this case is to try to minimize error on the observed examples. *Stochastic gradient-descent* (SGD) methods do this by adjusting the weight vector after each example by a small amount in the direction that would most reduce the error on that example:
+
+$$
+w_{t+1} = w_{t} - \frac{1}{2} \alpha \nabla \left [ v(s) - \hat{v}(s, w)   \right ] ^2 = w_{t} + \alpha \left [ v(s) - \hat{v}(s, w)   \right ] \nabla\hat{v}(s, w)
+$$
+
+We turn now to the case in which the target output, here denoted $U_t \in \mathbb{R}$, of the *t*th training example, is not the true value, $v(s_t)$, but some, possibly random, approximation to it. For example, $U_t$ might be a noise-corrupted version of $v(S_t)$, or it might be one of the bootstrapping targets using $\hat{v}$ mentioned in the previous section. In these cases we cannot perform the exact update because $v(S_t)$ is unknown, but we can approximate it by substituting $U_t$ in place of $v(s_t)$. This yields the following general SGD method for state-value prediction:
+
+$$
+w_{t+1} = w_{t} + \alpha \left [U_t - \hat{v}(s, w)   \right ] \nabla\hat{v}(s, w)
+$$
+
+If $U_t$ is an unbiased estimate, that is, if $\mathbf{E} \left [U_t | S_t =s \right] = v(S_t)$, for each t, then w t is guaranteed to converge to a local optimum under the usual stochastic approximation conditions for decreasing $\alpha$. 
+
+For example, suppose the states in the examples are the states generated by interaction (or simulated interaction) with the environment using policy $\pi$. Because the true value of . a state is the expected value of the return following it, the Monte Carlo target $U_t = G_t$ is by deﬁnition an unbiased estimate of $v_{\pi}(S_t)$. With this choice, the general SGD method converges to a locally optimal approximation to $v_\pi(S_t)$. Thus, the gradient-descent version of Monte Carlo state-value prediction is guaranteed to ﬁnd a locally optimal solution.
+
+**Gradient Monte Carlo Algorithm for Estimating $\hat{v} \approx v_\pi$**
+```
+Inputs : 
+	Policy pi
+	A differentiable function v_hat
+
+Parameters :
+	LearningRate alpha
+
+Initialisation : WeightVector w
+
+while True:
+	generate an episode from s_0 to s_T
+	for s from s_(T-1) to s(0):
+		w = w + alpha * (G_t - v_hat(s, w)) grad(v_hat(s, w))
+```
+
+One does not obtain the same guarantees if a bootstrapping estimate of $v_\pi(S_t)$ is used as the target $U_t$. Bootstrapping targets such as *n-step* returns $G t:t+n$ or the DP target, all depend on the current value of the weight vector $w_t$, which implies that they will be biased and that they will not produce a true gradient-descent method. One way to look at this is that the key step  relies on the target being independent of $w_t$. This step would not be valid if a bootstrapping estimate were used in place of $v_\pi(S_t)$. Bootstrapping methods are not in fact instances of true gradient descent *(Barnard, 1993)*. They take into account the effect of changing the weight vector $w_t$ on the estimate, but ignore its effect on the target. They include only a part of the gradient and, accordingly, we call them semi-gradient methods.
+
+Although semi-gradient (bootstrapping) methods do not converge as robustly as gradient methods, they do converge reliably in important cases such as the linear case discussed in the next section. Moreover, they offer important advantages that make them often clearly preferred.
+1. they typically enable signiﬁcantly faster learning
+2. they enable learning to be continual and online, without waiting for the end of an episode
+
+A prototypical semi-gradient method is *semi-gradient TD(0)*, which uses $U_t = R_{t+1} + \hat{v}(S_{t+1} ,w)$ as its target.
+
+**Semi-gradient TD(0) for estimating $\hat{v} \approx v_\pi$**
+```
+Inputs : 
+	Policy pi
+	A differentiable function v_hat
+
+Parameters :
+	LearningRate alpha
+	gamma
+
+Initialisation : WeightVector w
+
+while True:
+	init s
+	while s in not terminal:
+		a = pi(s)
+		r, s_next = env(s, a)
+		w = w + alpha * (R + gamma * v_hat(s_next, w) - v_hat(s, w)) grad(v_hat(s, w))
+		s = s_next
+
+```
+
+![](Attachements/Pasted%20image%2020250416120710.png)
+
+### Linear Methods
+Linear methods approximate state-value function by the inner product between $w$ and feature vector $x(s)$:
+
+$$
+\hat{v}(s, w) = w^Tx(s)
+$$
+
+In this case the approximate value function is said to be linear in the weights, or simply linear.
+
+Thus, in the linear case the general SGD update reduces to a particularly simple form:
+
+$$
+w_{t+1} = w_t + \alpha[U_t - \hat{v}(s, w)] x(s_t)
+$$
+
+Because it is so simple, the linear SGD case is one of the most favorable for mathematical analysis. Almost all useful convergence results for learning systems of all kinds are for linear (or simpler) function approximation methods.
+
+In particular, in the linear case there is only one optimum (or, in degenerate cases, one set of equally good optima), and thus any method that is guaranteed to converge to or near a local optimum is automatically guaranteed to converge to or near the global optimum.
+
+### Feature Construction for Linear Methods
+Linear methods are interesting because of their convergence guarantees, but also because in practice they can be very e!cient in terms of both data and computation. Whether or not this is so depends critically on how the states are represented in terms of features, which we investigate in this large section. Choosing features appropriate to the task is an important way of adding prior domain knowledge to reinforcement learning systems.
+
+A limitation of the linear form is that it cannot take into account any interactions between features, such as the presence of feature i being good only in the absence of feature j. For example, in the pole-balancing task (Example 3.4) high angular velocity can be either good or bad depending on the angle. If the angle is high, then high angular velocity means an imminent danger of falling—a bad state—whereas if the angle is low, then high angular velocity means the pole is righting itself—a good state. A linear value function could not represent this if its features coded separately for the angle and the angular velocity. It needs instead, or in addition, features for combinations of these two underlying state dimensions. In the following subsections we consider a variety of general ways of doing this.
+
+#### Polynomials
+TODO
+
+#### Fourier Basis
+TODO
+
+#### Coarse Coding
+Consider a task in which the natural representation of the state set is a continuous twodimensional space. One kind of representation for this case is made up of features corresponding to circles in state space, as shown to below.
+
+<img src=Attachements/Pasted%20image%2020250416131833.png alt=“CoarseCoding” width=300>
+
+right. If the state is inside a circle, then the corresponding feature has the value 1 and is said to be present; otherwise the feature is 0 and is said to be absent. This kind of 1–0-valued feature is called a binary feature. If we train at one state, a point in the space, then the weights of all circles intersecting that state will be affected. If the circles are small, then the generalization will be over a short distance, whereas if they are large, it will be over a large distance.
+
+#### Tile Coding
+Tile coding is a form of coarse coding for multi-dimensional continuous spaces that is ﬂexible and computationally efficient. It may be the most practical feature representation for modern sequential digital computers.
+
+In tile coding the receptive ﬁelds of the features are grouped into partitions of the state space. Each such partition is called a tiling, and each element of the partition is called a tile. For example, the simplest tiling of a two-dimensional state space is a uniform grid such as that shown below.
+
+![](Attachements/Pasted%20image%2020250416133134.png)
+
+#### Radial Basis Functions
+TODO
+
+### Selecting Step-Size Parameters Manually
+TODO
+
+### Nonlinear Function Approximation: Artiﬁcial Neural Networks
+Artiﬁcial neural networks (ANNs) are widely used for nonlinear function approximation. An ANN is a network of interconnected units that have some of the properties of neurons, the main components of nervous systems. ANNs have a long history, with the latest advances in training deeply-layered ANNs (deep learning) being responsible for some of the most impressive abilities of machine learning systems, including reinforcement learning systems. 
+
+A generic feedforward ANN with four input units, two output units, and two hidden layers is shown below
+
+![](Attachements/Pasted%20image%2020250416144703.png)
+
+An ANN with no hidden layers can represent only a very small fraction of the possible input-output functions. However an ANN with a single hidden layer containing a large enough ﬁnite number of sigmoid units can approximate any continuous function on a compact region of the network’s input space to any degree of accuracy (Cybenko, 1989). This is also true for other nonlinear activation functions that satisfy mild conditions, but nonlinearity is essential: if all the units in a multi-layer feedforward ANN have linear activation functions, the entire network is equivalent to a network with no hidden layers (because linear functions of linear functions are themselves linear). 
+
+Training the hidden layers of an ANN is therefore a way to automatically create features appropriate for a given problem so that hierarchical representations can be produced without relying exclusively on hand-crafted features. This has been an enduring challenge for artiﬁcial intelligence and explains why learning algorithms for ANNs with hidden layers have received so much attention over the years.
+
+The most successful way to train ANNs with hidden layers (provided the units have differentiable activation functions) is the backpropagation algorithm, which consists of alternating forward and backward passes through the network. Each forward pass computes the activation of each unit given the current activations of the network’s input units. After each forward pass, a backward pass e!ciently computes a partial derivative for each weight.
+
+The backpropagation algorithm can produce good results for shallow networks having 1 or 2 hidden layers, but it may not work well for deeper ANNs. In fact, training a network with k + 1 hidden layers can actually result in poorer performance than training a network with k hidden layers, even though the deeper network can represent all the functions that the shallower network can (Bengio, 2009).
+
+Overﬁtting is a problem for any function approximation method that adjusts functions with many degrees of freedom on the basis of limited training data. It is less of a problem for online reinforcement learning that does not rely on limited training sets, but generalizing effectively is still an important issue. Overﬁtting is a problem for ANNs in general, but especially so for deep ANNs because they tend to have very large numbers of weights. Many methods have been developed for reducing overﬁtting. These include stopping training when performance begins to decrease on validation data different from the training data (cross validation), modifying the objective function to discourage complexity of the approximation (regularization), and introducing dependencies among the weights to reduce the number of degrees of freedom (e.g., weight sharing).
+
+A particularly effective method for reducing overﬁtting by deep ANNs is the dropout method introduced by Srivastava, Hinton, Krizhevsky, Sutskever, and Salakhutdinov (2014). During training, units are randomly removed from the network (dropped out) along with their connections. Srivastava et al. found that this method signiﬁcantly improves generalization performance. It encourages individual hidden units to learn features that work well with random collections of other features. This increases the versatility of the features formed by the hidden units so that the network does not overly specialize to rarely-occurring cases. 
+
+Batch normalization (Ioffe and Szegedy, 2015) is another technique that makes it easier to train deep ANNs. Another technique useful for training deep ANNs is deep residual learning (He, Zhang, Ren, and Sun, 2016). Sometimes it is easier to learn how a function differs from the identity function than to learn the function itself. Then adding this difference, or residual function, to the input produces the desired function. In deep ANNs, a block of layers can be made to learn a residual function simply by adding shortcut, or skip, connections around the block. These connections add the input to the block to its output, and no additional weights are needed. He et al. (2016) evaluated this method using deep convolutional networks with skip connections around every pair of adjacent layers, ﬁnding substantial improvement over networks without the skip connections on benchmark image classiﬁcation tasks. Both batch normalization and deep residual learning were used in the reinforcement learning application to the game of Go.
+
+
+
+### F.A Challenges
+- But it is not completely clear that the VE is the right performance objective for reinforcement learning. Remember that our ultimate purpose—the reason we are learning a value function—is to ﬁnd a better policy. The best value function for this purpose is not necessarily the best for minimizing VE. Nevertheless, it is not yet clear what a more useful alternative goal for value prediction might be. For now, we will focus on VE.
+
+## On-policy Control with Approximation
+In this chapter we return to the control problem, now with parametric approximation of the action-value function $\hat{q}(s, a, w) \approx q_\star (s, a)$, where $w$ is a ﬁnite-dimensional weight vector. In the episodic case, the extension is straightforward, but in the continuing case we have to take a few steps backward and re-examine how we have used discounting to deﬁne an optimal policy. Surprisingly, once we have genuine function approximation we have to give up discounting and switch to a new “average-reward” formulation of the control problem, with new “differential” value functions.
+
+
+### Episodic Semi-gradient Control
+The general gradient-descent update for action-value prediction is
+
+$$
+w_{t+1} = w_t + alpha [U_t - \hat{q}(s_t, a_t, w_t)]\nabla \hat{q}(s_t, a_t, w_t)
+$$
+
+
+**Note:** For the one-step Sarsa method $U_t$ is $R_{t+1} + \gamma q(s_{t+1}, a_{t+1}, w_t)$.
+
+**Hint:** A linear technic to approximate $q$ is *Stacked Representation* :
+![](Attachements/Pasted%20image%2020250417131224.png)
+And another equivalent for the stacked representation in NNs is to consider multiple outputs for each action. 
+![](Attachements/Pasted%20image%2020250417131628.png)
+
+### Average Reward: A New Problem Setting for Continuing Tasks
+The average-reward setting is one of the major settings commonly considered in the classical theory of dynamic programming and less-commonly in reinforcement learning. As we discuss in the next section, the discounted setting is problematic with function approximation, and thus the average-reward setting is needed to replace it. In the average-reward setting, the quality of a policy $\pi$ is deﬁned as the average rate of reward, or simply average reward, while following that policy, which we denote as $r(\pi)$:
+
+$$
+r(\pi) = \lim_{h\rightarrow\infty} \frac{1}{h} \sum_{t = 1}^{h}\mathbb{E}\left [R_{t}~|~S(0), A(0:t-1) \sim \pi \right] = \sum_s \mu_\pi(s) \sum_{a} \pi(a|s) \sum_{s’, r} \rho(s’, r~|~s, a)r
+$$
+
+where the expectations are conditioned on the initial state, $S_0$ , and on the subsequent actions being taken according to $\pi$.  $\mu_\pi$ is the steady-state distribution, $\mu_\pi(s) = \lim_{t\rightarrow\infty} Pr\{S_t=s | A_0:t-1 \sim \pi\}$, which is assumed to exist for any $\pi$ and to be independent of $S_0$ . This assumption about the MDP is known as *ergodicity*. It means that where the MDP starts or any early decision made by the agent can have only a temporary effect; in the long run the expectation of being in a state depends only on the policy and the MDP transition probabilities. Ergodicity is sufficient to guarantee the existence of the limits in the equations above. 
+
+In the average-reward setting, returns are deﬁned in terms of differences between rewards and the average reward:
+
+$$
+G_t = \sum_{k=t+1}^{\infty} (R_k - r(\pi))
+$$
+
+
+This is known as the differential return, and the corresponding value functions are known as differential value functions. Differential value functions also have Bellman equations, just slightly different from those we have seen earlier. We simply remove all $\gamma$s and replace all rewards by the difference between the reward and the true average reward:
+
+$$
+v_\pi(s) = \sum_{a} \pi(a|s) \sum_{s’, r} \rho(s’, r| a, s)[r - r(\pi) + v_\pi(s’)]
+$$
+
+$$
+q_\pi(s, a) = \sum_{s’, r} \rho(s’, r| a, s)[r - r(\pi) + \sum_{a’}\pi(a’|s’)q(s’, a’)]
+$$
+
+$$
+v_\star(s) = \max_{a}\sum_{s’, r} \rho(s’, r| a, s)[r - \max_{\pi}r(\pi) + v_\star(s’)]
+$$
+
+$$
+q_\star(s, a) = \sum_{s’, r} \rho(s’, r| a, s)[r - \max_{\pi}r(\pi) + \max_{a’} q_\star(s’, a’)]
+$$
+
+There is also a differential form of the two TD errors:
+
+$$
+\delta_t = R_t - \bar{R}_t + \hat{v}(s_{t+1}, w_t) - \hat{v}(s_t, w_t)
+$$
+
+$$
+\delta_t = R_t - \bar{R}_t + \hat{q}(s_{t+1}, a_{t+1}, w_t) - \hat{q}(s_t, a_t, w_t)
+$$
+
+where $\bar{R}_t$ is an estimate at time $t$ of the average reward $r(\pi)$. With these alternate deﬁnitions, most of our algorithms and many theoretical results carry through to the average-reward setting without change. 
+
+**Differential semi-gradient Sarsa for estimating $\hat{q} \approx q_\star$:**
+```
+Inputs:
+	A differentiable action-value function q
+Parameters:
+	alpha, beta
+Iitialization:
+	w, r_bar
+
+s = an initial state
+a = pi(s, q)
+while True:
+	s_next, r = env(s, a)
+	a_next = pi(s_next, q)
+	delta = r - r_bar + q(s_next, a_next) - q(s, a)
+	r_bar = r_bar + beta * delta # delta is more efficient than (r - r_bar)
+	w += alpha * delta * grad(q(s, a, w))
+	s = s_next
+	a = a_next
+```
+
+## Policy Gradient Methods
+In this chapter we consider methods that learn a parameterized policy that can select actions without consulting a value function. A value function may still be used to learn the policy parameter, but is not required for action selection. We use the notation $\theta \in \mathbb{R}^d$ for the policy’s parameter vector. Thus we write $\pi(a | s, \theta) = Pr \{ A_t =a | S_t =s, \theta_t =\theta\}$ for the probability that action $a$ is taken at time $t$ given that the environment is in state $s$ at time $t$ with parameter $\theta$.
+
+In this chapter we consider methods for learning the policy parameter based on the gradient of some scalar performance measure $J(\theta)$ with respect to the policy parameter. These methods seek to maximize performance, so their updates approximate gradient ascent in $J$:
+
+$$
+\theta_{t+1} = \theta_t + \alpha \nabla J(\theta_t)
+$$
+
+All methods that follow this general schema we call **policy gradient** methods, whether or not they also learn an approximate value function. Methods that learn approximations to both policy and value functions are often called *actor–critic* methods, where ‘actor’ is a reference to the learned policy, and ‘critic’ refers to the learned value function, usually a state-value function.
+
+### Policy Approximation and its Advantages
+If the action space is discrete and not too large, then a natural and common kind of parameterization is to form parameterized numerical preferences $h(s, a, \theta) \in \mathbb{R}$ for each state–action pair. The actions with the highest preferences in each state are given the highest probabilities of being selected, for example, according to an exponential soft-max distribution:
+
+$$
+\pi(a|s, \theta) = \frac{e^{h(s, a, \theta)}}{\sum_{b}e^{h(s, b, \theta)}}
+$$
+
+We call this kind of policy parameterization soft-max in action preferences.
+
+1. If the soft-max distribution included a temperature parameter, then the temperature could be reduced over time to approach determinism, but in practice it would be difficult to choose the reduction schedule, or even the initial temperature, without more prior knowledge of the true action values than we would like to assume. Action preferences are different because they do not approach speciﬁc values; instead they are driven to produce the optimal stochastic policy. If the optimal policy is deterministic, then the preferences of the optimal actions will be driven inﬁnitely higher than all suboptimal actions (if permitted by the parameterization).
+2. It enables the selection of actions with arbitrary probabilities. In problems with signiﬁcant function approximation, the best approximate policy may be stochastic. For example, in card games with imperfect information the optimal play is often to do two different things with speciﬁc probabilities, such as when blu!ng in Poker. Action-value methods have no natural way of ﬁnding stochastic optimal policies, whereas policy approximating methods can.
+
+**Note:** To avoid computational problems that can be caused by exponential operator we can subtract action preferences $h$ by a term $c = \max_a h(s, a, \theta)$.
+
+$$
+\pi(a|s, \theta) = \frac{e^{h(s, a, \theta)}e^{-c}}{\sum_b e^{h(s, b, \theta}e^{-c}} = \frac{e^{h(s, a, \theta) - c}}{\sum_b e^{h(s, b, \theta) -c}}
+$$
+
+### The Policy Gradient Theorem
+How can we estimate the performance gradient with respect to the policy parameter when the gradient depends on the unknown effect of policy changes on the state distribution?
+Fortunately, there is an excellent theoretical answer to this challenge in the form of the policy gradient theorem, which provides an analytic expression for the gradient of performance with respect to the policy parameter that does **not** involve the derivative of the state distribution. The policy gradient theorem for the episodic case establishes that
+
+$$
+\nabla J(\theta) = \sum_s \mu_\pi(s) \sum_a q(s, a) \nabla \pi(a|, \theta)
+$$
+
+### Estimating the Policy Gradient
+Notice that inside the expectation we have a sum over all actions. We want to make this term even simpler and get rid of the sum over all actions. If this was an expectation over actions, we could get a stochastic example of this two and so avoid summing over all actions. 
+
+$$
+\nabla J(\theta) = \sum_s \mu_\pi(s) \sum_a q(s, a) \nabla \pi(a|s, \theta) = \sum_s \mu_\pi(s) \sum_a \pi(a|s, \theta) \frac{1}{\pi(a|s, \theta)} \nabla \pi(a|s, \theta) q(s, a)
+$$
+
+$$
+\nabla J(\theta) = \mathbb{E}_a\left [  \frac{\nabla \pi(a|s, \theta)}{\pi(a|s, \theta)} q(s, a) \right ] = \mathbb{E}_a\left [  \nabla \ln(\pi(a|s, \theta)))q(s, a) \right ]
+$$
+
+The new stochastic gradient ascent update now looks like this
+
+$$
+\theta_{t+1} = \theta_t + \alpha \nabla \ln(\pi(a|s, \theta)))q(s, a)
+$$
+
+$q(s, a)$ can be replaced by $G_t$ and also the policy gradient theorem can be generalized to include a comparison of the action value to an arbitrary baseline $b(s)$. Adding this baseline does not have any effect on the expectation but reduces the variance of the update.
+
+$$
+\nabla J(\theta) = \mathbb{E}_a\left [ (G_t - b(s)) \nabla \ln(\pi(a|s, \theta))) \right ]
+$$
+
+One natural choice for the baseline is an estimate of the state value, $\hat{v}(S_t, w)$.  and by using the TD(0) technic,
+
+$$
+\nabla J(\theta) = \mathbb{E}_a\left [ (R_t + \gamma \hat{v}(s_{t+1}) - \hat{v}(s_{t})) \nabla \ln(\pi(a|s, \theta))) \right ]
+$$
+
+### Actor–Critic Methods
+TODO
+
+### Policy Gradient for Continuing Problems
+for continuing problems without episode boundaries we need to deﬁne performance in terms of the average rate of reward per time step:
+
+$$
+J(\theta) = r(\pi) = \sum_s \mu_\pi(s) \sum_a \pi(a|s) \sum_{s’, r} \rho(s’, r | s, a) r
+$$
+
+and the gradient of $J$ is,
+
+$$
+\nabla J(\theta) = \mathbb{E}_a\left [ (R_t -\bar{R} + \hat{v}(s_{t+1}) - \hat{v}(s_{t})) \nabla \ln(\pi(a|s, \theta))) \right ]
+$$
+
+**Actor–Critic with Eligibility Traces (continuing), for estimating $\pi_theta \approx \pi_\star$:**
+```
+Input: 
+	A differentiable policy function pi(s, theta)
+	A differentiable value-function v_hat(s, w)
+Parameters:
+	alpha_w, alpha_r_bar, alpha_theta
+	lambda_w, lambda_theta # [0 ~ 1]
+Initialise:
+	r_bar, w, theta
+	s = s_0
+	z_w = 0 # d-component eligibility trace vector
+	z_theta = 0 # d’-component eligibility trace vector
+while True:
+	a = pi(s, theta)
+	s_next, r = env(s, a)
+	
+	delta = r - r_bar + v_hat(s_next, w) - v_hat(s, w)
+	r_bar = r_bar + alpha_r * delta
+	z_w = lambda_w * z_w + grad(v_hat(s, w))
+	z_theta = lambda_theta * z_theta + grad(ln(pi(a|s, theta)))
+
+	w = w + alpha_w * delta_w * z_w
+	theta = theta + alpha_theta * delta_theta * z_theta
+
+	s = s_next
+```
+
+### Gaussian Policies for Continuous Actions
+Policy-based methods offer practical ways of dealing with large actions spaces, even continuous spaces with an inﬁnite number of actions. Instead of computing learned probabilities for each of the many actions, we instead learn statistics of the probability distribution. For example, the action set might be the real numbers, with actions chosen from a normal (Gaussian) distribution.
+
+The probability density function for the normal distribution is conventionally written
+
+$$
+p(x) = \frac{1}{\sigma \sqrt{2\pi}} e^{\frac{(x - \mu)^2}{2\sigma^2}}
+$$
+
+To produce a policy parameterization, the policy can be deﬁned as the normal probability density over a real-valued scalar action, with mean and standard deviation given by parametric function approximators that depend on the state.
+
+$$
+\pi(a|s,\theta) = \frac{1}{\sigma(s, \theta) \sqrt{2\pi}} e^{\frac{(a - \mu(s, \theta))^2}{2\sigma^2(s, \theta)}}
+$$
+
+For this we divide the policy’s parameter vector into two parts, $\theta = [\theta_µ , \theta_\sigma ) ]^T$, one part to be used for the approximation of the mean and one part for the approximation of the standard deviation. The mean can be approximated as a linear function. The standard deviation must always be positive and is better approximated as the exponential of a linear function.
+
+Sigma essentially controls the degree of exploration. We typically initialize the variance to be large so that a wide range of actions are tried. As learning progresses, we expect the variance to shrink and the policy to concentrate around the best action in each state. Like many parameterized policies, the agent can reduce the amount of exploration over time through learning.
+
+
+
+
+
+
 
 
 
