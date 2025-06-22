@@ -660,10 +660,58 @@ Software functions associated with this chapter are listed below.
 - **Js = JacobianSpace(Slist, thetalist)** Computes the space Jacobian $J_s(θ) ∈ R^{6×n}$ given a list of joint screws $S_i$ expressed in the ﬁxed space frame and a list of joint angles.
 
 ### Inverse Kinematics
+**Problem :** given a homogeneous transform $X \in SE(3)$, find solutions $θ$ that satisfy $T (θ) = X$.
+There two common method for solving this problem:
+1. Analytic Inverse Kinematics: Since it only is used in easy cases only, and it is not a general solution, We do not spend any time on this.
+2. Numerical Inverse Kinematics: Here we use Newton-Raphson method to solve IK problem iteratively.
 
+Unlike the forward kinematics problem, the inverse kinematics problem can possess multiple solutions, or no solutions in the event that X lies outside the workspace.
+
+#### Numerical Inverse Kinematics
+Even in cases where an analytic solution does exist, numerical methods are often used to improve the accuracy of these solutions. For example, in a PUMA-type arm, the last three axes may not exactly intersect at a common point, and the shoulder joint axes may not be exactly orthogonal. In such cases, rather than throw away any analytic inverse kinematic solutions that are available, such solutions can be used as the initial guess in an iterative numerical procedure for solving the inverse kinematics.
+
+We will make use of an approach fundamental to nonlinear root-finding, the Newton{Raphson method. Also, methods of optimization are needed in situations where an exact solution may not exist and we seek the closest approximate solution; or, conversely, an infinity of inverse kinematics solutions exists (i.e., if the robot is kinematically redundant) and we seek a solution that is optimal with respect to some criterion.
+
+#### Newton-Raphson iterative algorithm
+
+* Inputs : $f$ and $x_d$
+* initialize $\theta^0$
+* loop:
+	* $e = x_d - f(\theta^i)$
+	* $\theta^{i+1} = \theta^{i} + \nabla f(\theta^i) e$
+	* $i++$
+
+**Modified algorithm for solving IK problem:**
+
+- Inputs: current $x_d$, $T_{sb}$
+- Calculate $T_{sd}$ using $x_d$
+- While $||\omega_b|| > \epsilon_\omega$ or  $||v_b|| > \epsilon_v$
+	- Calculate the error $\mathcal{V}_b = log(T_{sb}^{-1}(\theta^i)T_{sd})$
+	- $\theta^{i+1} = \theta^{i} + pinv(J) \mathcal{V}_b$
+	- $i++$
+
+#### Software
+- [thetalist, success] = IKinBody(Blist, M, T, thetalist0, eomg, ev)  
+- [thetalist, success] = IKinSpace(Slist, M, T, thetalist0, eomg, ev)
+
+### Kinematics of Closed Chains
+
+Any kinematic chain that contains one or more loops is called a closed chain. These mechanisms are examples of parallel mechanisms.
+
+The Stewart{Gough platform is used widely as both a motion simulator and a six-axis force{torque sensor. When used as a force{torque sensor, the six prismatic joints experience internal linear forces whenever any external force is applied to the moving platform; by measuring these internal linear forces one can estimate the applied external force. The Delta robot is a three-dof mechanism whose moving platform moves in such a way that it always remains parallel to the fixed platform. Because the three actuators are all attached to the three revolute joints of the fixed platform, the moving parts are relatively light; this allows the Delta to achieve very fast motions.
+
+![](Attachements/Pasted%20image%2020250613153755.png)
+
+Closed chains admit a much greater variety of designs than open chains, and their kinematic and static analysis is consequently more complicated. This complexity can be traced to two defining features of closed chains: (i) not all joints are actuated, and (ii) the joint variables must satisfy a number of loop-closure constraint equations, which may or may not be independent depending on the configuration of the mechanism. The presence of unactuated (or passive) joints, together with the fact that the number of actuated joints may deliberately be designed to exceed the mechanism’s kinematic degrees of freedom { such mechanisms are said to be redundantly actuated { not only makes the kinematics analysis more challenging but also introduces new types of singularities not present in open chains.
+
+![](Attachements/Pasted%20image%2020250613154318.png)
 
 ## Robot Dynamics
+In this chapter we study once again the motions of open-chain robots, but this time taking into account the forces and torques that cause them; this is the subject of robot dynamics. The associated dynamic equations { also referred to as the equations of motion { are a set of second-order differential equations of the form
 
+$$
+\tau = M(\theta)\ddot\theta + h(\theta, \dot\theta)
+$$
 ## Robot Motion Planning and Control
 
 ## Robot Manipulation and Wheeled Mobile Robots
