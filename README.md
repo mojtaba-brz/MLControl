@@ -26,7 +26,7 @@
 
 ## Requirements
 ### Python
-1. install Python
+1. install Python 3.12
 2. run `pip install -r py_requirements.txt`
 
 ### MATLAB
