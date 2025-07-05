@@ -4,6 +4,7 @@
         "Interpretabelity",
         "linalg",
         "Overfit",
+        "pyplot",
         "stabilizable"
     ]
 }
