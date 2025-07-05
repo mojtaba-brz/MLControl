@@ -14,6 +14,7 @@
 * [Reinforcement Learning Application](./Control/Optimal%20Control/Optimal%20Control.md/#reinforcement-learning-application)
 ### Technics
 * [How To Control A System With Feedback Noise and Pure Delay](./Control/Technics/How%20To%20Control%20A%20System%20With%20Feedback%20Noise%20and%20Pure%20Delay.md)
+
 ## Path Planning And Guidance
 
 ## Simulation
@@ -25,10 +26,8 @@
 
 ## Requirements
 ### Python
-To run python codes, you need to have bellow modules (Python 11)
-1. numpy
-2. control
-3. [tensorflow](https://www.tensorflow.org/install) (v2.18)
+1. install Python
+2. run `pip install -r py_requirements.txt`
 
 ### MATLAB
 To run SIMULINK models, you need to have at least, MATLAB 2023a.
