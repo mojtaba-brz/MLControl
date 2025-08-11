@@ -19,6 +19,11 @@
 
 ## Simulation
 
+### Tools
+- [Solidworks to Simulink (SimScape)]
+	1. [Install the Simscape Multibody Link Plugin](https://uk.mathworks.com/help/smlink/ug/installing-and-linking-simmechanics-link-software.html)
+	2. [Enable the Simscape Multibody Link Plugin in Solidworks](https://www.mathworks.com/help/smlink/ref/linking-and-unlinking-simmechanics-link-software-with-solidworks.html)
+
 ## Other Topics
 
 ### [Using MATLAB and Python Together](./Other%20Topics/MATLAB%20+%20Python/Tutorials.m)
