@@ -6,5 +6,6 @@
         "Overfit",
         "pyplot",
         "stabilizable"
-    ]
+    ],
+    "materialkv.pythonFile": "main.py"
 }
