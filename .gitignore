@@ -14,3 +14,10 @@ MLCEnvWin
 OneNote_RecycleBin
 
 .obsidian
+
+ROS2/lab-ws/build/
+ROS2/lab-ws/log/
+ROS2/lab-ws/install/
+ROS2/lab-ws/src/build/
+ROS2/lab-ws/src/log/
+ROS2/lab-ws/src/install/

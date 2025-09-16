@@ -7,5 +7,6 @@
         "pyplot",
         "stabilizable"
     ],
-    "materialkv.pythonFile": "main.py"
+    "materialkv.pythonFile": "main.py",
+    "github.copilot.chat.codeGeneration.useInstructionFiles": true
 }
